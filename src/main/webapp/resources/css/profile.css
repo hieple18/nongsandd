@@ -1,0 +1,67 @@
+.about-text {
+	margin-top: 30px
+}
+
+.about-story .icon-box {
+	position: relative;
+	margin: 20px 0 20px;
+}
+
+.about-story .icon-box .single-item {
+	position: relative;
+	padding-left: 70px;
+	display: inline-block;
+	margin-right: 30px;
+	margin-top: 30px;
+	margin-bottom: 10px
+}
+
+.about-story .icon-box .icon {
+	position: absolute;
+	color: #9c9c9c;
+	left: 0;
+	font-size: 45px;
+	top: 6px;
+}
+
+.about-story .icon-box .count {
+	margin-bottom: 15px;
+}
+
+.about-story .icon-box .name {
+	font-size: 17px;
+	font-weight: 400;
+	font-family: 'Roboto', sans-serif;
+}
+
+.review-block {
+	background-color: #FAFAFA;
+	border: 1px solid #EFEFEF;
+	padding: 15px;
+	border-radius: 3px;
+	margin-bottom: 15px;
+}
+
+.review-block-name {
+	font-size: 12px;
+	margin: 10px 0;
+}
+
+.review-block-date {
+	font-size: 12px;
+}
+
+.review-block-rate {
+	font-size: 13px;
+	margin-bottom: 15px;
+}
+
+.review-block-title {
+	font-size: 15px;
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+
+.review-block-description {
+	font-size: 13px;
+}
