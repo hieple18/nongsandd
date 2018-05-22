@@ -56,7 +56,7 @@ public class HomeController {
 	@Autowired
 	private SaleService saleService;
     
-    @RequestMapping(value="/")
+    @RequestMapping(value={"", "/"})
     public String welcome(ModelMap m){
         return "redirect:/gia-hom-nay"; 
     }
