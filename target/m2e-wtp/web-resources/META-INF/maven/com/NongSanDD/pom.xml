@@ -37,6 +37,11 @@
 			<version>6.0.5</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc4</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
 			<version>2.1.1</version><!--$NO-MVN-MAN-VER$ -->
