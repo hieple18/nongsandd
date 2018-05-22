@@ -4,12 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Date;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.entity.Agriculture;
 import com.models.PriceList;
 import com.models.PriceR;
+import com.models.PriceU;
 import com.constant.Constant;
 import com.entity.AgriCategory;
 import com.entity.AgriPrice;
@@ -70,14 +70,7 @@ public class AgricultureService {
     }
     
     public List<Object[]> getPriceByday(String sdate){
-    	Date date = new Date();
-		try {
-			date = outputFormatter.parse(sdate);
-			System.out.println("date");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	Date date = Date.valueOf(sdate);
     	return agriPriceReponsitory.getPriceByday(date);
     }
     
@@ -95,14 +88,13 @@ public class AgricultureService {
         List<Agriculture> agricultures = agricultureReponsitory.findAll();
         Date today = Constant.CURRENT_DATE();
         Calendar cal = Calendar.getInstance();
-        cal.setTime(today);
         ArrayList<Integer> listi = new ArrayList<>();
         Random rand = new Random();
         
         for(int i=0;i<15;i++){
             cal.setTime(today);
             cal.add(Calendar.DATE, i*-1);
-            Date date = cal.getTime();
+            Date date = new Date(cal.getTime().getTime());
             
             for(int j = 0; j<agricultures.size();j++){
                 if(i==0){
@@ -123,43 +115,6 @@ public class AgricultureService {
         }
     }
     
-    public void createPriceFile() throws IOException{
-    	List<Float> listPrice = null;
-    	
-    	List<Agriculture> agricultures = agricultureReponsitory.findAll();
-    	for (Agriculture agriculture : agricultures) {
-    		int id = agriculture.getId();
-			String fileName = "data/price/" + agriculture.getId() + ".txt";
-			System.out.println(fileName);
-			
-			listPrice = agriPriceReponsitory.getPriceChart(id);
-			
-			ClassLoader classLoader = getClass().getClassLoader();
-			File file = new File(classLoader.getResource(fileName).getFile());
-			FileWriter fr = null;
-			BufferedWriter out = null;
-	        try {
-	            fr = new FileWriter(file);
-	            String temp = listPrice.toString();
-	            out = new BufferedWriter(fr);
-	            System.out.println(temp);
-	            out.write(temp);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }finally{
-	            //close resources
-	            try {
-	            	out.flush();
-	            	out.close();
-	            	fr.flush();
-	                fr.close();
-	            } catch (IOException e) {
-	                e.printStackTrace();
-	            }
-	        }
-		}
-    }
-    
     public void deleteAgri(int id){
     	agricultureReponsitory.delete(id);
     }
@@ -168,15 +123,14 @@ public class AgricultureService {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		Date datePrevious = new Date(cal.getTime().getTime());
-		List<PriceR> rs = list.getLists();
+		List<PriceR> rs = list.getPrices();
 		System.out.println(rs + ", " + rs.size());
 		
 		for (PriceR priceR : rs) {
 			int agriID = priceR.getAgriID();
 			float price = priceR.getPrice();
-			float pricePrevious = agriPriceReponsitory.getPriceToCaculChange(agriID, datePrevious);
-			System.out.println(agriID + ", " + price + ", " + pricePrevious);
-			AgriPrice agriPrice = new AgriPrice(price, price - pricePrevious, Constant.CURRENT_DATE(), new Agriculture(agriID));
+			System.out.println(price + ", " + agriID);
+			AgriPrice agriPrice = new AgriPrice(price, 0, Constant.CURRENT_DATE(), new Agriculture(agriID));
 			agriPriceReponsitory.save(agriPrice);
 		}
 	}
@@ -185,9 +139,27 @@ public class AgricultureService {
 		List<PriceR> prices = new ArrayList<>();
 		
 		for (Agriculture agriculture : agricultures) {
-			prices.add(new PriceR(agriculture.getId(), 0));
+			prices.add(new PriceR(0, agriculture.getId()));
 		}
 		
 		return new PriceList(prices);
+	}
+	
+	public PriceU getPriceUpdate(){
+		Date today = Constant.CURRENT_DATE();
+		List<AgriPrice> prices = agriPriceReponsitory.getPriceToUpdate(today);
+		
+		return new PriceU(prices);
+	}
+	
+	public void saveUpdatePrice(PriceU priceU){
+		List<AgriPrice> prices = priceU.getPrices();
+		Date today = Constant.CURRENT_DATE();
+		for (AgriPrice agriPrice : prices) {
+			agriPrice.setDate(today);
+			agriPrice.setPriceChange(0);
+			
+			agriPriceReponsitory.save(agriPrice);
+		}
 	}
 }

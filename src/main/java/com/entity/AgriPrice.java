@@ -1,7 +1,7 @@
 package com.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,7 +52,7 @@ public class AgriPrice implements Serializable{
     @Column(name = "date")
     private Date date;
     
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "agriID", referencedColumnName = "id")
     private Agriculture agriculture;
 

@@ -18,6 +18,7 @@ import com.entity.AgriCategory;
 import com.entity.Agriculture;
 import com.entity.User;
 import com.models.PriceList;
+import com.models.PriceU;
 import com.models.Response;
 import com.service.AddressService;
 import com.service.AdminService;
@@ -98,9 +99,25 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/create-price")
-	public String createPrice(@ModelAttribute("price") PriceList list){
+	@ResponseBody
+	public int createPrice(@ModelAttribute("price") PriceList list){
 		
 		agricultureService.createPrice(list);
+		return list.getPrices().size();
+	}
+	
+	@RequestMapping("/update-price")
+	public String updatePrice(ModelMap m){
+		PriceU priceList = agricultureService.getPriceUpdate();
+		m.addAttribute("priceList", priceList);
+		
+		return "admin/price-update";
+	}
+	
+	@RequestMapping("/save-update-price")
+	public String saveUpdatePrice(@ModelAttribute("priceList") PriceU list){
+		agricultureService.saveUpdatePrice(list);
+		
 		return "redirect:/admin/agri";
 	}
 	

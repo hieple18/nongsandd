@@ -25,9 +25,6 @@
 						Sản</th>
 					<th scope="col" style="width: 15%">Giá Hôm Nay</th>
 					<th scope="col" style="width: 10%">Thay Đổi</th>
-					<th scope="col" style="width: 15%">Cao Nhất Tháng Này</th>
-					<th scope="col" style="width: 15%">Thấp Nhất Tháng này</th>
-					<th scope="col" style="width: 15%">Trung Bình Tháng này</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -48,9 +45,6 @@
 					        <td style="background-color: #fbdcdc">${agriPrice[4]}</td>
 					    </c:otherwise>
 					</c:choose>
-					<td>18.000</td>
-					<td>13.000</td>
-					<td>14.500</td>
 				</tr>
 				</c:forEach> 
 			</tbody>

@@ -1,6 +1,5 @@
 package com.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,12 +9,12 @@ import java.util.List;
 public class PriceList {
 	List<PriceR> prices;
 
-	public List<PriceR> getLists() {
+	public List<PriceR> getPrices() {
 		return prices;
 	}
 
-	public void setLists(List<PriceR> lists) {
-		this.prices = lists;
+	public void setPrices(List<PriceR> prices) {
+		this.prices = prices;
 	}
 
 	public PriceList(List<PriceR> lists) {
@@ -26,8 +25,4 @@ public class PriceList {
 	public PriceList(){
 		
 	};
-	
-	public void initList(){
-		prices = new ArrayList<PriceR>();
-	}
 }

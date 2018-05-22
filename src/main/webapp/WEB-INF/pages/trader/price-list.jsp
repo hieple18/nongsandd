@@ -33,16 +33,14 @@
 						Sản</th>
 					<th scope="col" style="width: 15%">Giá Hôm Nay</th>
 					<th scope="col" style="width: 10%">Thay Đổi</th>
-					<th scope="col" style="width: 15%">Cao Nhất Tháng Này</th>
-					<th scope="col" style="width: 15%">Thấp Nhất Tháng này</th>
-					<th scope="col" style="width: 15%">Trung Bình Tháng này</th>
 				</tr>
 			</thead>
 			<tbody>
  				<c:forEach var="agriPrice" items="${agriPrices}">
 					<tr>
 					<td scope="row">${agriPrice[0]}</td>
-					<td scope="row"><a href="/NongSanDD/bieu-do-gia?id=${agriPrice[0]}">${agriPrice[1]}</a></td>
+					<td scope="row"><a href="#" class="link_h" style="font-weight: bold; color: #577903" data="${agriPrice[0]}">
+						${agriPrice[1]}</a></td>
 					<td>${agriPrice[3]}</td>
 					<c:choose>
 					    <c:when test="${agriPrice[4] == 0}">
@@ -55,9 +53,6 @@
 					        <td style="background-color: #fbdcdc">${agriPrice[4]}</td>
 					    </c:otherwise>
 					</c:choose>
-					<td>18.000</td>
-					<td>13.000</td>
-					<td>14.500</td>
 				</tr>
 				</c:forEach> 
 			</tbody>

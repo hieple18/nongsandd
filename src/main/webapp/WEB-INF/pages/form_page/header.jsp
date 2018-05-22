@@ -15,17 +15,6 @@
 				</div>
 
 				<div class="col-md-4 col-sm-12 col-xs-12">
-					<div class="search-box">
-						<form action="#" class="clearfix">
-							<input type="text" placeholder="Search...">
-							<button>
-								<i class="fa fa-search"></i>
-							</button>
-						</form>
-					</div>
-				</div>
-
-				<div class="col-md-4 col-sm-12 col-xs-12">
 					<div class="autor">
 						<a href="/NongSanDD/NguoiDung">Đăng nhập</a>
 						<a href="/NongSanDD/dang-ki-tk-nguoidung">Tạo Tài Khoản</a>

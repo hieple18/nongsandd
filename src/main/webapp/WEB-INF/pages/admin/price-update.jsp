@@ -8,7 +8,7 @@
 	<section class="wrapper">
 		<div class="row">
 			<div style="width: 40%; margin: 50px auto 0">
-				<form:form action="/NongSanDD/admin/create-price" method="post"
+				<form:form action="/NongSanDD/admin/save-update-price" method="post"
 					modelAttribute="priceList">
 					<section class="panel">
 						<header class="panel-heading no-border"> Nông Sản </header>
@@ -26,11 +26,12 @@
 									<c:forEach items="${priceList.prices}" var="price"
 										varStatus="status">
 										<tr>
-											<td align="center">${price.agriID}<input type="hidden"
-											 name="prices[${status.index}].agriID" value="${price.agriID}" ></td>
+											<td align="center">${status.count}<input type="hidden"
+											 name="prices[${status.index}].id" value="${price.id}" ></td>
 											<td></td>
-											<td></td>
-											<td><input name="prices[${status.index}].price" /></td>
+											<td>${price.agriculture.name}<input type="hidden"
+											 name="prices[${status.index}].agriculture.id" value="${price.agriculture.id}" ></td>
+											<td><input name="prices[${status.index}].price" value="${price.price}"/></td>
 										</tr>
 									</c:forEach>
 								</tbody>
