@@ -38,7 +38,8 @@
 					<td>
 						<select class="form-control form-control-lg action_option">
 							<option selected disabled>Chọn</option>
-							<option value="NhaBuon/chi-tiet-tin-ban?id=${data[1].id}&state=3"> Chi tiết</option>
+							<option value="/NongSanDD/NhaBuon/chi-tiet-tin-ban?id=${data[1].id}&state=3"> Chi tiết</option>
+							<!-- set id to this value to detected this option need to ask user's confirmation before action -->
 							<option value="${data[0]}"> Xóa</option>
 						</select>
 					</td>
@@ -55,33 +56,36 @@
 <!-- user/index -->
 
 <script type="text/javascript">
+$("#sale_table").on('change','.action_option', function () { 
+	var value = $(this).val();
+	if (value >= 0) { // value is an id. this option need to ask user's confirmation before acrion
+		deleteSale(value);
+	} else { // value is a link. just follow this link
+		window.location.href = this.value;
+	}
+});
+
 function deleteSale(id){
 	$.confirm({
-        content: 'Nông sản này bạn đã mua rồi. Bạn có muốn xóa tin này không?',
+		content: 'Nông sản này bạn đã mua rồi. Bạn có muốn xóa tin này không?',
         icon: 'fa fa-question-circle',
+        title: 'Xác nhận',
         animation: 'scale',
         closeAnimation: 'scale',
         opacity: 0.5,
+        type: 'orange',
         buttons: {
-            'confirm': function (){
-            	window.location.href = "xoa-tin-da-chon?id=" + id;
-            	
+        	'Đồng Ý': {
+        		btnClass: 'btn-blue',
+        		action: function (){
+        			window.location.href = "/NongSanDD/NhaBuon/xoa-tin-da-chon?id=" + id;
+        		}
             },
-            cancel: function () {
-            	text: "Đóng"
+            'Hủy' : function () {
             }
         }
     });
 }
-
-$("#sale_table").on('change','.action_option', function () { 
-    var value = $(this).val();
-    if (value >= 0) {
-    	deleteSale(value);
-	} else {
-		window.location.href = this.value;
-	}
-});
 </script>
 
 <script type='text/javascript'>

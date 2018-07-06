@@ -6,7 +6,7 @@
 <section id="main-content">
 	<section class="wrapper">
 		<div class="row">
-			<div style="width: 40%; margin: 50px auto 0">
+			<div style="width: 50%; margin: 50px auto 0">
 				<section class="panel">
 					<header class="panel-heading no-border"> Nông Sản </header>
 					<table class="table table-bordered">
@@ -27,12 +27,9 @@
 									<td></td>
 									<td><div class="btn-group">
 											<a class="btn btn-primary" onclick="addAgri(${category.id})" href="#"><i
-												class="icon_plus_alt2"></i></a> 
+												class="fas fa-plus-circle"></i></a> 
 											<a class="btn btn-success" onclick="updateCategory(${category.id}, "${category.name }")" 
-												href="#"><i class="icon_check_alt2"></i></a>
-											<a class="btn btn-danger" onclick="deleteCategory(${category.id})"
-												href="#"><i class="icon_close_alt2"></i></a>
-												
+												href="#"><i class="fas fa-pencil-alt"></i></a>
 										</div></td>
 								</tr>
 
@@ -43,10 +40,11 @@
 											<td></td>
 											<td>${agri.name }</td>
 											<td><div class="btn-group">
+													
+													<a class="btn btn-success" onclick="updateAgri(${category.id}, ${agri.id}, '${agri.name}')" 
+														href="#"><i class="fas fa-pencil-alt"></i></a>
 													<a class="btn btn-danger" onclick="deleteAgri(${agri.id})" href="#"><i
-														class="icon_close_alt2"></i></a>
-													<a class="btn btn-success" onclick="updateAgri(${agri.id}, "${agri.name }")" 
-														href="#"><i class="icon_check_alt2"></i></a>
+														class="fas fa-trash-alt"></i></a>
 												</div></td>
 										</tr>
 										<c:set var="stt" scope="session" value="${stt + 1}" />
@@ -113,11 +111,11 @@
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title">Sửa thông tin</h4>
 			</div>
-			<input type="hidden" id="agriID" name="id">
+			
 			<div class="modal-body">
 				<form class="form-horizontal form-label-left" id="updateAgriForm"
 					action="/NongSanDD/admin/update-agri" method="get">
-
+					<input type="hidden" id="agriID" name="id">
 					<div class="form-group">
 						<label class="control-label col-lg-2" for="inputSuccess">Mục</label>
 						<div class="col-lg-10">
@@ -131,7 +129,7 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label">Tên</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" name=name id="agriName"
+							<input type="text" class="form-control" name="name" id="agriName"
 								required="required">
 						</div>
 					</div>
@@ -183,17 +181,19 @@
 		$.confirm({
 	        content: 'Có chắc muốn xóa nông sản này không?',
 	        icon: 'fa fa-question-circle',
-	        type: 'warning',
+	        title: 'Xác nhận',
+	        type: 'organe',
 	        animation: 'scale',
 	        closeAnimation: 'scale',
 	        opacity: 0.5,
 	        buttons: {
-	            'confirm': function (){
-	            	window.location.href = "/NongSanDD/admin/delete-agri?id=" + id;
-	            	
+	            'Đồng Ý': {
+	        		btnClass: 'btn-blue',
+	        		action: function (){
+	        			window.location.href = "/NongSanDD/admin/delete-agri?id=" + id;
+	        		}
 	            },
-	            cancel: function () {
-	            	text: "Đóng"
+	            'Hủy' : function () {
 	            }
 	        }
 	    });

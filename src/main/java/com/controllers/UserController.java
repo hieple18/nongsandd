@@ -1,7 +1,5 @@
 package com.controllers;
 
-import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.entity.Address;
-import com.entity.AgriCategory;
 import com.entity.Agriculture;
 import com.entity.Commune;
 import com.entity.Hamlet;
@@ -156,6 +153,9 @@ public class UserController {
 		Address address = traderService.getAddress(traderID);
 		m.addAttribute("address", address);
 		
+		List<String> tradingAgris = saleService.getTradingAgriName(traderID);
+		m.addAttribute("tradingAgris", tradingAgris);
+		
 		m.addAttribute("notifies", getNotify());
 		m.addAttribute("userName", getName());
 		return "user/trader-profile";
@@ -184,82 +184,21 @@ public class UserController {
 		return redirect;
 	}
 	
+	@RequestMapping(value = "/xoa-nhan-xet")
+	public String deleteUserCmt(@RequestParam("id") int id) {
+		traderService.deleteCmtAboutTrader(getUser(), id);
+		return "redirect:/NguoiDung/";
+	}
+	
 	// end handle trader profile request
-	////////////////////////////////////////////////////////////
-	// handle price request
-
-	@RequestMapping(value = "/create-random-price")
-	@ResponseBody
-	public boolean createRandomPrice() throws IOException {
-		agricultureService.randomPrice();
-		return true;
-	}
-
-	// get today price
-	@RequestMapping(value = "/gia-hom-nay")
-	public String getPriceList(ModelMap m) {
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-
-		List<Object[]> agriPrices = agricultureService.getPriceToday();
-		m.addAttribute("agriPrices", agriPrices);
-
-		Date minDate = agricultureService.getMinDatePrice();
-		m.addAttribute("minDate", minDate);
-		m.addAttribute("title", "Hôm Nay");
-		
-		m.addAttribute("notifies", getNotify());
-		m.addAttribute("userName", getName());
-		return "user/price-list";
-	}
-
-	// get price by date
-	@RequestMapping(value = "/gia-ngay-truoc")
-	public String getPriceListByDate(@RequestParam("date") String date, ModelMap m) {
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-
-		List<Object[]> agriPrices = agricultureService.getPriceByday(date);
-		m.addAttribute("agriPrices", agriPrices);
-
-		Date minDate = agricultureService.getMinDatePrice();
-		m.addAttribute("minDate", minDate);
-
-		String title = "Ngày " + date.toString();
-		m.addAttribute("title", title);
-
-		m.addAttribute("notifies", getNotify());
-		m.addAttribute("userName", getName());
-		return "user/price-list";
-	}
-
-	// price chart
-	@RequestMapping(value = "/bieu-do-gia")
-	public String getPriceChart(@RequestParam("id") int id, ModelMap m) {
-		List<Float> agriPrices = agricultureService.getPriceChart(id);
-		m.addAttribute("agriPrices", agriPrices);
-
-		List<Agriculture> agricultures = agricultureService.getAllAgri();
-		m.addAttribute("agris", agricultures);
-
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-
-		String currAgriName = agricultures.get(id - 1).getName();
-		agricultures.remove(id - 1);
-		m.addAttribute("currAgriName", currAgriName);
-
-		m.addAttribute("notifies", getNotify());
-		m.addAttribute("userName", getName());
-		return "user/price-chart";
-	}
-
-	// end handle price request
 	/////////////////////////////////////////////////////
 	// handle sale request
 
 	@RequestMapping(value = "/dang-tin")
 	public String uploadSaleInfo(ModelMap m) {
+		boolean creatable = saleService.checkToCreateSale(getUserID());
+		m.addAttribute("creatable", creatable);
+		
 		Address address = addressService.getAddressByID(getUser().getAddress().getId());
 		m.addAttribute("address", address);
 
@@ -288,10 +227,13 @@ public class UserController {
 	@RequestMapping(value = "/create-sale")
 	public String createSale(@ModelAttribute("sale") Sale sale, @RequestParam(value = "hamletID") int hamletID,
 			@RequestParam(value = "links[]") List<String> links) {
-
-		saleService.createSale(sale, links, hamletID, getUser());
-
-		return "redirect:/NguoiDung/";
+		boolean creatable = saleService.checkToCreateSale(getUserID());
+		if(creatable){
+			saleService.createSale(sale, links, hamletID, getUser());
+			return "redirect:/NguoiDung/";
+		}
+		
+		return "trader/404";
 	}
 	
 	@RequestMapping(value = "/xoa-tin-ban")
@@ -321,8 +263,8 @@ public class UserController {
 	
 	@RequestMapping(value="ds-tin-ban")
 	public String getSaleSelected(ModelMap m){
-		List<TradingData> selecteds = saleService.getSaleSelectedByUser(getUserID());
-		m.addAttribute("selecteds", selecteds);
+		List<Object[]> datas = saleService.getSaleSelectedByUser(getUserID());
+		m.addAttribute("datas", datas);
 
 		m.addAttribute("notifies", getNotify());
 		m.addAttribute("userName", getName());
@@ -331,9 +273,8 @@ public class UserController {
 
 	@RequestMapping(value = "/xac-nhan-yeu-cau")
 	public String confirmSaleRequest(@RequestParam(value = "id") int requestID, ModelMap m) {
-		int saleID = saleService.confirmRequest(requestID, getUser());
-
-		return "redirect:/NguoiDung/ds-yeu-cau?id=" + saleID;
+		saleService.confirmRequest(requestID, getUser());
+		return "redirect:/NguoiDung/ds-tin-ban";
 	}
 	
 	@RequestMapping(value = "/khoi-phuc-tin-ban")

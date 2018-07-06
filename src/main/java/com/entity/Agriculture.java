@@ -41,6 +41,9 @@ public class Agriculture implements Serializable{
     @Column(name = "unit", length = Constant.COLUMN_LENGTH_10_LIMIT)
     private String unit;
     
+    @Column(name = "status")
+    private int status;
+    
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "categoryId", referencedColumnName = "id")
     private AgriCategory agriCategory;
@@ -61,10 +64,11 @@ public class Agriculture implements Serializable{
 		this.id = id;
 	}
 	
-	public Agriculture(String name, String unit, AgriCategory agriCategory) {
+	public Agriculture(String name, String unit, int status, AgriCategory agriCategory) {
 		super();
 		this.name = name;
 		this.unit = unit;
+		this.status = status;
 		this.agriCategory = agriCategory;
 	}
 
@@ -123,5 +127,13 @@ public class Agriculture implements Serializable{
     public void setUnit(String unit) {
         this.unit = unit;
     }
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
     
 }

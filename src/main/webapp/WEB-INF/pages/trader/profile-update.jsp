@@ -29,8 +29,7 @@
 						<optgroup label="${category.name }">
 							<c:forEach var="agri" items="${agris}">
 								<c:if test="${agri.agriCategory.id == category.id }">
-									<option value="${agri.id}"
-										<c:if test="${fn:contains( tradingList, agri.id ) }">selected="selected"</c:if> >
+									<option value="${agri.id}">
 										${agri.name}</option>
 								</c:if>
 							</c:forEach>
@@ -85,13 +84,14 @@
 				for="address">Phường/Xã <span class="required">*</span>
 			</label>
 			<div class="col-md-2 col-sm-6 col-xs-12">
-				<select id="select-commune" name="communeID"
+				<form:select id="select-commune" name="communeID" path="commune"
 					data-live-search="true" class="form-control col-xs-12">
+					<option>--Chọn phường/xã--</option> 
 					<c:forEach var="commune" items="${communes}">
 						<option <c:if test="${commune.communeID == communeID}">selected="selected"</c:if>
 							 value="${commune.communeID}">${commune.name}</option>
 					</c:forEach>
-				</select>
+				</form:select>
 			</div>
 			<label class="control-label col-md-2 col-sm-3 col-xs-12"
 				for="address">Thôn/Xóm <span class="required">*</span>
@@ -120,8 +120,8 @@
 		<div class="form-group" style="text-align: center">
 			<div class="col-md-6 col-md-offset-3">
 
-				<a onclick="submitRegisterForm()" class="btn btn-success">Đăng
-					Kí</a> <a href="#" class="btn btn-primary" style="margin-left: 50px">Hủy
+				<a onclick="submitRegisterForm()" class="btn btn-success">Cập Nhập</a>
+				 <a href="#" class="btn btn-primary" style="margin-left: 50px">Hủy
 					Bỏ</a>
 			</div>
 		</div>
@@ -131,8 +131,11 @@
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQvN2xdEEQKXzw1vlLYZTtXhqyjZv_IHw&libraries=places"></script>
 <script>
+<c:forEach var="item" items="${tradingList}">
+	$('#tradingAgri-select  option[value="${item}"]').attr("selected","selected");
+</c:forEach>
+	
 	$("#tradingAgri-select").chosen();
-
 	function submitRegisterForm() {
 		$("#tradingList").val($("#tradingAgri-select").chosen().val());
 		$("#register_form").submit();
@@ -143,57 +146,29 @@
 			rules : {
 				name : {
 					required : true,
-					minlength : 2
+					minlength : 4,
+					maxlength: 30
 				},
-				address : {
-					required : true,
-					minlength : 10
+				age : {
+					maxlength: 3
 				},
 				phone : {
 					required : true,
 					minlength : 8
-				},
-				password : {
-					required : true,
-					minlength : 6
-				},
-				confirm_password : {
-					required : true,
-					equalTo : "#password"
-				},
-				communeID : {
-					required : true,
-				},
-				hamletID : {
-					required : true,
 				}
 			},
 			messages : {
-				address : {
+				name : {
 					required : "Vui lòng nhập địa chỉ",
-					minlength : "Địa chỉ Phải ít nhất 10 kí tự"
+					minlength : "Tên Phải ít nhất 4 kí tự",
+					maxlength : "Tên tối đa 30 kí tự"
+				},
+				age : {
+					maxlength : "Tuổi tối đa 3 kí tự"
 				},
 				phone : {
 					required : "Vui lòng nhập số điện thoại",
 					minlength : "SDT Phải ít nhất 8 kí tự"
-				},
-				name : {
-					required : "Vui lòng nhập tên",
-					minlength : "Tên Phải ít nhất 2 kí tự"
-				},
-				password : {
-					required : "Vui lòng nhập mật khẩu",
-					minlength : "mật khẩu phải có ít nhất 6 kí tự"
-				},
-				confirm_password : {
-					required : "Vui lòng nhập lại mật khẩu",
-					equalTo : "Mật khẩu nhập lại không trùng"
-				},
-				communeID : {
-					required : "Vui lòng chọn",
-				},
-				hamletID : {
-					required : "Vui lòng chọn",
 				}
 			}
 		});

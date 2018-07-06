@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.entity.AgriCategory;
 import com.entity.Agriculture;
+import com.entity.Trader;
 import com.entity.User;
 import com.models.PriceList;
 import com.models.PriceU;
@@ -87,8 +88,20 @@ public class AdminController {
 		return "redirect:/admin/agri";
 	}
 	
-	@RequestMapping("/add-price")
+	@RequestMapping("/update-agri")
+	public String updateAgri(@RequestParam("categoryID") int cID, @RequestParam("id") int id,
+			@RequestParam("name") String name){
+		
+		agricultureService.updateAgri(id, cID, name);
+		return "redirect:/admin/agri";
+	}
+	
+	@RequestMapping("/price-add")
 	public String addPrice(ModelMap m){
+		if(agricultureService.checkExistsPriceToday()){
+			return "redirect:/admin/price-update";
+		}
+		
 		List<Agriculture> agricultures = agricultureService.getAllAgri();
 		m.addAttribute("agricultures", agricultures);
 		
@@ -99,14 +112,13 @@ public class AdminController {
 	}
 	
 	@RequestMapping("/create-price")
-	@ResponseBody
-	public int createPrice(@ModelAttribute("price") PriceList list){
+	public String createPrice(@ModelAttribute("price") PriceList list){
 		
 		agricultureService.createPrice(list);
-		return list.getPrices().size();
+		return "redirect:/admin/price-update";
 	}
 	
-	@RequestMapping("/update-price")
+	@RequestMapping("/price-update")
 	public String updatePrice(ModelMap m){
 		PriceU priceList = agricultureService.getPriceUpdate();
 		m.addAttribute("priceList", priceList);
@@ -129,9 +141,7 @@ public class AdminController {
 	
 	@RequestMapping("/delete-agri")
 	public String deleteAgri(@RequestParam("id") int id){
-		if(saleService.checkDeleteAgri(id)){
-			agricultureService.deleteAgri(id);
-		}
+		agricultureService.deleteAgri(id);
 		
 		return "redirect:/admin/agri";
 	}
@@ -155,8 +165,53 @@ public class AdminController {
 		return "redirect:/admin";
 	}
 	
-	@RequestMapping("/list-user")
+	@RequestMapping("/user-list")
 	public String listUser(ModelMap m){
+		
+		List<User> users = userService.getListUser();
+		m.addAttribute("users", users);
+		
+		return "admin/list-user";
+	}
+	
+	@RequestMapping("/user-info")
+	public String userInfo(@RequestParam("id") int id, ModelMap m){
+		
+		List<User> users = userService.getListUser();
+		m.addAttribute("users", users);
+		
+		return "admin/list-user";
+	}
+	
+	@RequestMapping("/trader-list")
+	public String listTrader(ModelMap m){
+		
+		List<User> users = userService.getListUser();
+		m.addAttribute("users", users);
+		
+		return "admin/list-trader";
+	}
+	
+	@RequestMapping("/trader-info")
+	public String traderInfo(@RequestParam("id") int id, ModelMap m){
+		
+		List<User> users = userService.getListUser();
+		m.addAttribute("users", users);
+		
+		return "admin/list-user";
+	}
+	
+	@RequestMapping("/sale-list")
+	public String listSale(ModelMap m){
+		
+		List<User> users = userService.getListUser();
+		m.addAttribute("users", users);
+		
+		return "admin/sale-list";
+	}
+	
+	@RequestMapping("/sale-info")
+	public String saleInfo(@RequestParam("id") int id, ModelMap m){
 		
 		List<User> users = userService.getListUser();
 		m.addAttribute("users", users);
@@ -204,4 +259,41 @@ public class AdminController {
 		adminService.randomRequest(file);
 		return "redirect:/admin";
 	}
+	
+	@RequestMapping("/add-trader-phone")
+	public String addTraderPhone(){
+		return "admin/add-trader-phone";
+	}
+	
+	@RequestMapping("/create-trader-phone")
+	public String createTraderPhone(@RequestParam("phone") String phone){
+		traderService.verifyTraderByAdmin(phone);
+		return "redirect:/admin";
+	}
+	
+	@RequestMapping("/update-trader-phone")
+	public String updateTraderPhone(@RequestParam("phone") String phone, @RequestParam("id") int id){
+		traderService.updateTraderByAdmin(id, phone);
+		return "redirect:/admin/wait-to-register";
+	}
+	
+	@RequestMapping("/delete-trader-phone")
+	public String deleteTraderPhone(@RequestParam("id") int id){
+		traderService.deleteTraderByAdmin(id);
+		return "redirect:/admin/wait-to-register";
+	}
+	
+	@RequestMapping("/wait-to-register")
+	public String phoneNotRegister(ModelMap m){
+		List<Trader> traders = traderService.getTraderWait();
+		m.addAttribute("traders", traders);
+		return "admin/wait-to-register";
+	}
+	
+	@RequestMapping("/create-admin")
+	public String createAdmin(){
+		adminService.createAdmin();
+		return "redirect:/admin";
+	}
+	
 }

@@ -23,6 +23,9 @@ public interface TraderRepository extends JpaRepository<Trader, Integer>{
 	@Query("select t from Trader t where t.phoneNum = ?1")
     public Trader getTraderByPhone(String phoneNum);
 	
+	@Query("select t from Trader t where t.phoneNum = ?1 and status = ?2")
+    public Trader getTraderNotActive(String phoneNum, int status);
+	
 	@Query("select t.name from Trader t where t.phoneNum = ?1")
     public String getNameByPhone(String phoneNum);
 	
@@ -42,4 +45,18 @@ public interface TraderRepository extends JpaRepository<Trader, Integer>{
 	
 	@Query("select t.address from Trader t where t.id = ?1")
 	public Address getAddress(int traderID);
+	
+	@Query("select count(t) from Trader t where t.phoneNum = ?1 and t.status = ?2")
+	public int getTraderWaitToVerify(String phoneNum, int status);
+	
+	@Query("select t from Trader t where t.status = ?1")
+	public List<Trader> getTraderWaitToRegister(int status);
+	
+	@Query("select t from Trader t where t.phoneNum = ?1 and t.status = ?2")
+	public Trader getVerifiedTrader(String phoneNum, int status);
+	
+	@Transactional
+	@Modifying
+	@Query("update Trader t set t.status = ?1 where t.id=?2")
+    public void updateStatus(int state, int id);
 }

@@ -9,6 +9,7 @@
 <script src="/NongSanDD/resources/js/admin/jquery.nicescroll.js" type="text/javascript"></script>
 <!--custome script for all page-->
 <script src="/NongSanDD/resources/js/admin/scripts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 <Script>
 
 	$(function() {

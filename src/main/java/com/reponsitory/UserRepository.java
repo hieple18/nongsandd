@@ -25,6 +25,9 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	@Query("select u from User u where u.phoneNum = ?1")
     public User getUserByPhone(String phoneNum);
 	
+	@Query("select u from User u where u.phoneNum = ?1 and u.status = ?2")
+    public User getUserNotActive(String phoneNum, int status);
+	
 	@Query("select u.name from User u where u.phoneNum = ?1")
     public String getNameByPhone(String phoneNum);
 	

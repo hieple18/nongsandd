@@ -61,13 +61,14 @@
 				for="address">Phường/Xã <span class="required">*</span>
 			</label>
 			<div class="col-md-2 col-sm-6 col-xs-12">
-				<select id="select-commune" name="communeID"
+				<form:select id="select-commune" name="communeID" path="commune"
 					data-live-search="true" class="form-control col-xs-12">
+					<option>--Chọn phường/xã--</option> 
 					<c:forEach var="commune" items="${communes}">
 						<option <c:if test="${commune.communeID == communeID}">selected="selected"</c:if>
 							 value="${commune.communeID}">${commune.name}</option>
 					</c:forEach>
-				</select>
+				</form:select>
 			</div>
 			<label class="control-label col-md-2 col-sm-3 col-xs-12"
 				for="address">Thôn/Xóm <span class="required">*</span>
@@ -96,8 +97,8 @@
 		<div class="form-group" style="text-align: center">
 			<div class="col-md-6 col-md-offset-3">
 
-				<button type="submit" class="btn btn-success">Đăng Kí</button>
-				<a href="#" class="btn btn-primary" style="margin-left: 50px">Hủy
+				<button type="submit" class="btn btn-success">Cập Nhập</button>
+				<a href="/NongSanDD/NguoiDung" class="btn btn-primary" style="margin-left: 50px">Hủy
 					Bỏ</a>
 			</div>
 		</div>
@@ -114,36 +115,33 @@
 			rules : {
 				name : {
 					required : true,
-					minlength : 2
+					minlength : 4,
+					maxlength: 30
 				},
-				address : {
-					required : true,
-					minlength : 10
-				}
-				communeID : {
-					required : true,
+				age : {
+					maxlength: 3
 				},
-				hamletID : {
+				phone : {
 					required : true,
+					minlength : 8
 				}
 			},
 			messages : {
-				address : {
+				name : {
 					required : "Vui lòng nhập địa chỉ",
-					minlength : "Địa chỉ Phải ít nhất 10 kí tự"
+					minlength : "Tên Phải ít nhất 4 kí tự",
+					maxlength : "Tên tối đa 30 kí tự"
+				},
+				age : {
+					maxlength : "Tuổi tối đa 3 kí tự"
 				},
 				phone : {
 					required : "Vui lòng nhập số điện thoại",
 					minlength : "SDT Phải ít nhất 8 kí tự"
-				},
-				communeID : {
-					required : "Vui lòng chọn",
-				},
-				hamletID : {
-					required : "Vui lòng chọn",
 				}
 			}
 		});
+	});
 	});
 </script>
 

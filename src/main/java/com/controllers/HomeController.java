@@ -13,25 +13,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.entity.Account;
 import com.entity.Address;
 import com.entity.AgriCategory;
 import com.entity.Agriculture;
-import com.entity.Commune;
 import com.entity.Trader;
 import com.entity.TraderCmt;
-import com.entity.User;
+import com.models.PriceRecord;
 import com.service.AddressService;
+import com.service.AdminService;
 import com.service.AgricultureService;
 import com.service.SaleService;
 import com.service.TraderService;
-import com.service.UserService;
 
 /**
 *@author HiepLe
@@ -48,119 +45,25 @@ public class HomeController {
     private AddressService addressService;
     
     @Autowired
-    private UserService userService;
-    
-	@Autowired
-    private TraderService traderService;
-	
+	private TraderService traderService;
+
 	@Autowired
 	private SaleService saleService;
+	
+	@Autowired 
+	private AdminService adminService;
     
     @RequestMapping(value={"/", ""})
     public String welcome(ModelMap m){
-        return "redirect:/gia-hom-nay"; 
+        return "redirect:/gia-hom-nay?page=1"; 
     }
-    
-    ////////////////////////////////////////////////////////////
-    // handle user register request
-    
-    @RequestMapping(value="/dang-ki-tk-nguoidung")
-    public String userRegister(ModelMap m){
-    	List<Commune> communes = addressService.getCommuneByDistrictID(677);
-        m.put("communes", communes);
-        
-        User user = new User();
-        Address address = new Address();
-        Account account = new Account();
-        user.setAddress(address);
-        user.setAccount(account);
-        m.put("user", new User());
-        
-        m.addAttribute("action", "/NongSanDD/tao-tk-nguoidung");
-        
-        return "user/register";
-    }
-    
-    @RequestMapping(value="/tao-tk-nguoidung")
-    public String createUser(@ModelAttribute("user") User user,
-    		@RequestParam(value = "hamletID") int hamletID){
-        userService.createUser(user, hamletID);
-        return "redirect:/NguoiDung";
-    }
-    
-    @RequestMapping(value = "/kiem-tra-sdt-nd")
-    @ResponseBody
-    public boolean checkUserPhoneNum(@RequestParam("phoneNum") String phoneNum){
-    	return userService.checkPhoneNum(phoneNum);
-    }
-    
-    // end handle user register request
-    ///////////////////////////////////////////////
-    // handle trader request
-    
-    @RequestMapping(value="/dang-ki-tk-nhabuon")
-    public String tradeRegister(ModelMap m){
-    	List<Commune> communes = addressService.getCommuneByDistrictID(677);
-        m.put("communes", communes);
-        
-        List<Agriculture> agricultures = agricultureService.getAllAgri();
-		m.addAttribute("agris", agricultures);
-		
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-        
-        Trader trader = new Trader();
-        Address address = new Address();
-        Account account = new Account(); 
-        trader.setAddress(address);
-        trader.setAccount(account);
-        m.put("user", new User());
-        
-        m.addAttribute("action", "/NongSanDD/tao-tk-nhabuon");
-        
-        return "trader/register";
-    }
-    
-    @RequestMapping(value="/tao-tk-nhabuon")
-    public String createUser(@ModelAttribute("trader") Trader trader,
-    		@RequestParam(value = "hamletID") int hamletID,
-    		@RequestParam(value = "tradingList") String tradingList){
-    	
-    	traderService.createTrader(trader, hamletID, tradingList);
-        return "redirect:/NhaBuon";
-    }
-    
-    @RequestMapping(value="/ds-nha-buon")
-    public String getListTrader(ModelMap m){
-    	
-    	List<Trader> traders = traderService.getListTrader();
-    	m.addAttribute("traders", traders);
-        return "list-trader";
-    }
-    
-    @RequestMapping(value = "/thong-tin-nb")
-	public String getTraderInfo(@RequestParam("id") int traderID, ModelMap m) {
-		Trader trader = traderService.getTrader(traderID);
-		m.addAttribute("trader", trader);
-		
-		List<TraderCmt> cmts = traderService.getTraderCmts(traderID);
-		m.addAttribute("cmts", cmts);
-		m.addAttribute("cmtSize", cmts.size());
-		
-		List<String> tradingAgris = saleService.getTradingAgriName(traderID);
-		m.addAttribute("tradingAgris", tradingAgris);
-		
-		Address address = traderService.getAddress(traderID);
-		m.addAttribute("address", address);
-
-		return "trader-profile";
-	}
-    
-    // end handle trader request
-    ///////////////////////////////////////////////////////
     
     @RequestMapping(value="/dang-nhap")
-    public String login(ModelMap m){
+    public String login(@RequestParam(value = "error", required = false) String error, 
+    	      ModelMap model){
+    	if (error != null) {
+    	      model.addAttribute("message", "Đăng nhập thất bại!");
+    	    }
     	return "login";
     }
     
@@ -174,10 +77,7 @@ public class HomeController {
         return "redirect:/";
     }
     
-    // end handle register request
-    ////////////////////////////////////////////////////////////
     // handle price request
-    
     @RequestMapping(value = "/create-random-price")
     @ResponseBody
     public boolean createRandomPrice() throws IOException {
@@ -187,28 +87,27 @@ public class HomeController {
     
     // get today price
     @RequestMapping(value="/gia-hom-nay")
-    public String getPriceList(ModelMap m){
-    	List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-    	m.addAttribute("agriCategories", agriCategories); 
-    	
-        List<Object[]> agriPrices = agricultureService.getPriceToday();
+    public String getPriceList(@RequestParam(value = "page") int page, ModelMap m){
+        List<PriceRecord> agriPrices = agricultureService.getPriceToday();
         m.addAttribute("agriPrices", agriPrices); 
         
         Date minDate = agricultureService.getMinDatePrice();
         m.addAttribute("minDate", minDate);
         
         m.addAttribute("title", "Hôm Nay");
+        m.addAttribute("page", page);
         return "price-list";
         
     }
     
     // get price by date
     @RequestMapping(value="/gia-ngay-truoc")
-    public String getPriceListByDate(@RequestParam("date") String date, ModelMap m){
+    public String getPriceListByDate(@RequestParam("date") String date,
+    		@RequestParam("page") int page, ModelMap m){
     	List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
     	m.addAttribute("agriCategories", agriCategories);
     	
-        List<Object[]> agriPrices = agricultureService.getPriceByday(date);
+        List<PriceRecord> agriPrices = agricultureService.getPriceByday(date);
         m.addAttribute("agriPrices", agriPrices);
         
         Date minDate = agricultureService.getMinDatePrice();
@@ -216,12 +115,15 @@ public class HomeController {
         
         String title = "Ngày " + date.toString();
         m.addAttribute("title", title);
+        
+        m.addAttribute("page", page);
         return "price-list";
     }
     
     // price chart
     @RequestMapping(value="/bieu-do-gia")
-    public String getPriceChart(@RequestParam("id") int id, ModelMap m){
+    public String getPriceChart(@RequestParam("id") int id,
+    		@RequestParam("page") int page, ModelMap m){
     	List<Float> agriPrices = agricultureService.getPriceChart(id);
     	m.addAttribute("agriPrices", agriPrices);
     	
@@ -235,6 +137,7 @@ public class HomeController {
     	agricultures.remove(id - 1);
     	m.addAttribute("currAgriName", currAgriName);
     	
+    	m.addAttribute("page", page);
         return "price-chart";
     }
     
@@ -255,5 +158,37 @@ public class HomeController {
     
     //end handle price request
     /////////////////////////////////////////////////////
-  
+    
+    @RequestMapping(value = "/thong-tin-nb")
+	public String getTraderInfo(@RequestParam("id") int traderID, ModelMap m) {
+		Trader trader = traderService.getTrader(traderID);
+		m.addAttribute("trader", trader);
+
+		List<TraderCmt> cmts = traderService.getTraderCmts(traderID);
+		m.addAttribute("cmts", cmts);
+		m.addAttribute("cmtSize", cmts.size());
+
+		List<String> tradingAgris = saleService.getTradingAgriName(traderID);
+		m.addAttribute("tradingAgris", tradingAgris);
+
+		Address address = traderService.getAddress(traderID);
+		m.addAttribute("address", address);
+
+		return "trader-profile";
+	}
+    
+    @RequestMapping(value = "/ds-nha-buon")
+	public String getListTrader(ModelMap m) {
+
+		List<Trader> traders = traderService.getListTrader();
+		m.addAttribute("traders", traders);
+		return "list-trader";
+	}
+    
+    @RequestMapping(value = "/create-admin-332284")
+	public String createAdmin() {
+
+    	adminService.createAdmin();
+		return "redirect:/admin";
+	}
 }

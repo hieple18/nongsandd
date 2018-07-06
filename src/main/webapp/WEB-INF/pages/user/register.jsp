@@ -6,7 +6,7 @@
 <jsp:include page="../form_page/page-head.jsp"></jsp:include>
 <div class="container">
 	<form:form class="form-horizontal form-label-left" id="register_form" modelAttribute="user"
-		action="${action}" style="padding-top: 50px">
+		action="/NongSanDD/TempND/tao-tk" style="padding-top: 50px">
 
 		<div class="item form-group">
 			<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Họ
@@ -33,8 +33,8 @@
 					class="form-control col-md-7 col-xs-12" path="phoneNum" />
 			</div>
 		</div>
-		<input type="hidden" name="address.lat" id="map_lat"/>
-		<input type="hidden" name="address.lng" id="map_lng"/>
+		<input type="hidden" name="address.lat" id="map_lat" value="0"/>
+		<input type="hidden" name="address.lng" id="map_lng" value="0"/>
 		<div class="item form-group">
 			<label class="control-label col-md-3 col-sm-3 col-xs-12"
 				for="address">Tỉnh <span class="required">*</span>
@@ -59,13 +59,13 @@
 				for="address">Phường/Xã <span class="required">*</span>
 			</label>
 			<div class="col-md-2 col-sm-6 col-xs-12">
-				<select id="select-commune" name="communeID"
+				<form:select id="select-commune" name="communeID" path="commune"
 					data-live-search="true" class="form-control col-xs-12">
 					<option>--Chọn phường/xã--</option> 
 					<c:forEach var="commune" items="${communes}">
 						<option value="${commune.communeID}">${commune.name}</option>
 					</c:forEach>
-				</select>
+				</form:select>
 			</div>
 			<label class="control-label col-md-2 col-sm-3 col-xs-12"
 				for="address">Thôn/Xóm <span class="required">*</span>
@@ -87,6 +87,7 @@
 				<div id="upload-sale-map" style="height: 300px; width: 100%"></div>
 			</div>
 		</div>
+		
 		<div class="item form-group">
 			<label for="password" class="control-label col-md-3">Mật Khẩu
 				<span class="required">*</span>
@@ -102,11 +103,11 @@
 				Mật Khẩu <span class="required">*</span>
 			</label>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<input id="password2" type="password"
+				<input id="password2" type="password" name="confirm_password"
 					class="form-control col-md-7 col-xs-12" required="required">
 			</div>
 		</div>
-		<div class="ln_solid"></div>
+		<div style="height: 20px" class="ln_solid"></div>
 		<div class="form-group" style="text-align: center">
 			<div class="col-md-6 col-md-offset-3">
 
@@ -122,7 +123,7 @@
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQvN2xdEEQKXzw1vlLYZTtXhqyjZv_IHw&libraries=places"></script>
 <script>
 
-	function checkPhoneNumber(phone) {
+	function validatePhoneNumber(phone) {
 	    var flag = false;
 	    phone = phone.replace('(+84)', '0');
 	    phone = phone.replace('+84', '0');
@@ -140,76 +141,129 @@
 	    }
 	    return flag;
 	}
-
+	
+	/* function phoneNumNotActive(phoneNum){
+		$.confirm({
+			content : 'Số điện thoại ' + phoneNum + 'đã được đăng kí nhưng chưa được kích hoạt?',
+			icon : 'fa fa-question-circle',
+			title: 'Xác nhận',
+			animation : 'scale',
+			closeAnimation : 'scale',
+			type: 'orange',
+			opacity : 0.5,
+			buttons : {
+				'kích hoạt tài khoản': {
+	        		btnClass: 'btn-blue',
+	        		action: function (){
+	        			window.location.href = "/NongSanDD/TempND/kich-hoat-tk?phone="+phoneNum;
+	        		}
+	            },
+	            'Xem thông tin tài khoản': {
+	        		btnClass: 'btn-blue',
+	        		action: function (){
+	        			window.location.href = "/NongSanDD/TempND/tk-chua-kh?phone="+phoneNum;
+	        		}
+	            },
+				'Hủy' : function() {
+				}
+			}
+		});
+	} */
+	
 	$(document).ready(function() {
+		function verifyUserPhone(phone){
+			$.ajax({
+				type: "get",
+				data: {phoneNum: phone},
+				url: "/NongSanDD/TempND/kiem-tra-sdt",
+				success: function(response){
+					if(response === true){
+						warningPhoneError('Số điện thoại đã được Nhà Nông đăng kí.');
+					}else{
+						verifyTraderPhone(phone);
+					}
+				}
+			});
+		}
+
+		function verifyTraderPhone(phone){
+			$.ajax({
+				type: "get",
+				data: {phoneNum : phone},
+				url: "/NongSanDD/TempNB/kiem-tra-xt-sdt",
+				success: function(response){
+					switch(response) {
+				    case -2:
+				        break;
+				    case -1:
+				    	warningPhoneError('Số điện thoại đang chờ Nhà Buôn đăng kí.');
+				        break;
+				    case 0:
+				    	warningPhoneError('Số điện thoại đang chờ Nhà Buôn đăng kí.');
+				        break;
+				    case 1:
+				    	warningPhoneError('Số điện thoại đã được Nhà Buôn đăng kí.');
+				        break;
+				    default:
+				        alert("loi");
+					}
+				}
+			});
+		}
+		
 		
 		$("#telephone").change(function(){
 			var phoneNum = $(this).val();
-			if(!checkPhoneNumber(phoneNum)){
+			if(!validatePhoneNumber(phoneNum)){
 				$.alert({
                     title: 'Lỗi',
                     icon: 'fa fa-warning',
                     type: 'orange',
-                    content: 'Số điện thoại không hợp lệ. vui lòng nhập lại.',
+                    content: 'Số điện thoại ' + phoneNum + ' không hợp lệ. vui lòng nhập lại.',
                 });
 				
+				$("#telephone").val("");
 				$("#telephone").focus();
 			}else{
-				$.ajax({
-					type : "GET",
-					data : {
-						phoneNum : phoneNum
-					},
-					url : "/NongSanDD/kiem-tra-sdt-nd",
-					success : function(response) {
-						if(response === false){
-							$.alert({
-	                            title: 'Lỗi',
-	                            icon: 'fa fa-warning',
-	                            type: 'orange',
-	                            content: 'Số điện thoại này đã được dùng để đăng kí tài khoản, vui lòng nhập số khác.',
-	                        });
-							
-							$("#telephone").focus();
-						}
-					}
-				});
+				verifyUserPhone(phone);
 			}
-		})
+		});
 		
 		$('#register_form').validate({
 			rules : {
 				name : {
 					required : true,
-					minlength : 2
+					minlength : 4,
+					maxlength: 30
 				},
-				address : {
-					required : true,
-					minlength : 10
+				age : {
+					maxlength: 3
 				},
 				phone : {
 					required : true,
 					minlength : 8
 				},
-				password : {
+				'account.password' : {
 					required : true,
-					minlength : 6
+					minlength : 6,
+					maxlength : 40
 				},
 				confirm_password : {
 					required : true,
 					equalTo : "#password"
-				},
-				communeID : {
-					required : true,
 				},
 				hamletID : {
 					required : true,
 				}
 			},
 			messages : {
-				address : {
+				name : {
 					required : "Vui lòng nhập địa chỉ",
-					minlength : "Địa chỉ Phải ít nhất 10 kí tự"
+					minlength : "Tên Phải ít nhất 4 kí tự",
+					maxlength : "Tên tối đa 30 kí tự"
+				},
+				age : {
+					maxlength : "Tuổi tối đa 3 kí tự"
 				},
 				phone : {
 					required : "Vui lòng nhập số điện thoại",
@@ -219,16 +273,14 @@
 					required : "Vui lòng nhập tên",
 					minlength : "Tên Phải ít nhất 2 kí tự"
 				},
-				password : {
+				'account.password' : {
 					required : "Vui lòng nhập mật khẩu",
-					minlength : "mật khẩu phải có ít nhất 6 kí tự"
+					minlength : "mật khẩu phải có ít nhất 6 kí tự",
+					maxlength : "mật khẩu tối đa 40 kí tự"
 				},
 				confirm_password : {
 					required : "Vui lòng nhập lại mật khẩu",
 					equalTo : "Mật khẩu nhập lại không trùng"
-				},
-				communeID : {
-					required : "Vui lòng chọn",
 				},
 				hamletID : {
 					required : "Vui lòng chọn",

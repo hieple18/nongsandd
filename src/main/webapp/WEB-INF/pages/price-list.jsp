@@ -1,14 +1,27 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="security"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<c:if test="${page == 1}"><jsp:include page="form_page/page-head.jsp"></jsp:include></c:if>
+<c:if test="${page == 2}">
+	<security:authorize access="hasRole('ROLE_USER')">
+		<jsp:include page="form_page/user-head.jsp"></jsp:include>
+	</security:authorize>
+</c:if>
+<c:if test="${page == 3}">
+	<security:authorize access="hasRole('ROLE_TRADER')">
+		<jsp:include page="form_page/trader-head.jsp"></jsp:include>
+	</security:authorize>
+</c:if>
 
-<jsp:include page="form_page/page-head.jsp"></jsp:include>
 <div class="price_container container">
 	<div>
 		<div class="col-md-10 col-xs-12" style="display: flex;">
 			<form class="col-md-4" action="gia-ngay-truoc" method="get">
 				<div class="col-md-8 col-sm-6 col-xs-12 form-group has-feedback">
-				<input type='text' class="form-control" id='price_datepicker' name="date" />
+					<input type='text' class="form-control" id='price_datepicker' name="date" />
+					<input type='hidden' class="form-control" name="page" value="${page}" />
 				</div>
 				<div class="col-md-4 col-sm-6 col-xs-12 form-group has-feedback">
 					<button class="btn btn-success" type="submit">Cập Nhập</button>
@@ -21,39 +34,40 @@
 			<thead>
 				<tr>
 					<th scope="col"></th>
-					<th scope="col" style="width: 25%">Tên Nông
+					<th scope="col" style="width: 20%">Tên Nông
 						Sản</th>
 					<th scope="col" style="width: 15%">Giá Hôm Nay</th>
-					<th scope="col" style="width: 10%">Thay Đổi</th>
+					<th scope="col" style="width: 15%">Thay Đổi</th>
+					<th scope="col" style="width: 15%">Cao nhất tháng này</th>
+					<th scope="col" style="width: 15%">thấp nhất tháng này</th>
+					<th scope="col" style="width: 15%">TB tháng này</th>
 				</tr>
 			</thead>
 			<tbody>
- 				<c:forEach var="agriPrice" items="${agriPrices}">
+ 				<c:forEach var="price" items="${agriPrices}">
 					<tr>
-					<td scope="row">${agriPrice[0]}</td>
-					<td scope="row"><a href="#" class="link_h" style="font-weight: bold; color: #577903" data="${agriPrice[0]}">
-						${agriPrice[1]}</a></td>
-					<td>${agriPrice[3]}</td>
+					<td scope="row">${price.id}</td>
+					<td scope="row"><a href="#" class="link_h" style="font-weight: bold; color: #577903" data="${price.id}">
+						${price.name}</a></td>
+					<td>${price.price}</td>
 					<c:choose>
-					    <c:when test="${agriPrice[4] == 0}">
+					    <c:when test="${price.change == 0}">
 					        <td>0</td>
 					    </c:when> 
-					    <c:when test="${agriPrice[4] > 0}">
-					        <td style="background-color: #d3f5d7">+${agriPrice[4]}</td>
+					    <c:when test="${price.change > 0}">
+					        <td style="background-color: #d3f5d7">+${price.change}</td>
 					    </c:when>   
 					    <c:otherwise>
-					        <td style="background-color: #fbdcdc">${agriPrice[4]}</td>
+					        <td style="background-color: #fbdcdc">${price.change}</td>
 					    </c:otherwise>
 					</c:choose>
+					<td>${price.max}</td>
+					<td>${price.min}</td>
+					<td>${price.avg}</td>
 				</tr>
 				</c:forEach> 
 			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="7">Lưu ý: Đây là giá cho mặt hàng đẹp nhất. Đối
-						với mỗi nhà buôn có thể chênh lệnh nhỏ so với giá hiển thị</td>
-				</tr>
-			</tfoot>
+
 		</table>
 	</div>
 </div>
@@ -64,7 +78,15 @@
 $(document).ready(function() {
 	$(".link_h").on('click', function () { 
 	    var id = $(this).attr('data');
-	    window.location.href = "bieu-do-gia?id=" + id;
+	    window.location.href = "bieu-do-gia?id=" + id + "&page=" + ${page};
+	});
+	
+
+	$('#price_datepicker').datetimepicker({
+		format : 'YYYY-MM-DD',
+		defaultDate : new Date(),
+		maxDate : moment(),
+		minDate : "${minDate}"
 	});
 	
 	/* price-list.js */
@@ -92,13 +114,6 @@ $(document).ready(function() {
 				"previous" : "Trước"
 			},
 		},
-	});
-
-	$('#price_datepicker').datetimepicker({
-		format : 'MM/DD/YYYY',
-		defaultDate : new Date(),
-		maxDate : moment(),
-		minDate : "${minDate}"
 	});
 })
 </script>

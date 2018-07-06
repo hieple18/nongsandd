@@ -17,4 +17,7 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
 	@Modifying
 	@Query("update Address a set a.address = a.hamlet.name")
 	public void updateAddress();
+	
+	@Query("select a.hamlet.hamletID from Address a where a.id = ?1")
+	public int getHamletIDByAddress(int addressID);
 }

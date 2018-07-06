@@ -6,21 +6,9 @@
 <!--main content start-->
 <section id="main-content">
 	<section class="wrapper">
-		<!--overview start-->
-		<div class="row">
-			<div class="col-lg-12">
-				<h3 class="page-header">
-					<i class="fa fa-laptop"></i> Dashboard
-				</h3>
-				<ol class="breadcrumb">
-					<li><i class="fa fa-home"></i><a href="index.html">Home</a></li>
-					<li><i class="fa fa-laptop"></i>Dashboard</li>
-				</ol>
-			</div>
-		</div>
 
 		<div class="row">
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
 				<div class="info-box blue-bg">
 					<i class="fa fa-users"></i>
 					<div class="count">${fn:length(users)}</div>
@@ -31,7 +19,7 @@
 			
 			<!--/.col-->
 
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
 				<div class="info-box brown-bg">
 					<i class="fa fa-user"></i>
 					<div class="count">${fn:length(traders)}</div>
@@ -39,21 +27,10 @@
 				</div>
 				<!--/.info-box-->
 			</div>
-			<!--/.col-->
 
-			<%-- 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<div class="info-box dark-bg">
-					<i class="fa fa-thumbs-o-up"></i>
-					<div class="count">${fn:length(sales)}</div>
-					<div class="title">Order</div>
-				</div>
-				<!--/.info-box-->
-			</div> --%>
-			<!--/.col-->
-
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
 				<div class="info-box green-bg">
-					<i class="fa fa-cubes"></i>
+					<i class="fas fa-phone-volume"></i>
 					<div class="count">${fn:length(sales)}</div>
 					<div class="title">Đơn Hàng</div>
 				</div>
@@ -64,7 +41,7 @@
 		<!--/.row-->
 
 		<div class="row">
-			<div class="col-lg-9 col-md-12">
+			<div class="col-lg-12 col-md-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h2>
@@ -88,44 +65,6 @@
 
 				</div>
 			</div>
-			<div class="col-md-3">
-				<!-- List starts -->
-				<ul class="today-datas">
-					<!-- List #1 -->
-					<li>
-						<!-- Graph -->
-						<div>
-							<span id="todayspark1" class="spark"></span>
-						</div> <!-- Text -->
-						<div class="datas-text">11,500 visitors/day</div>
-					</li>
-					<li>
-						<div>
-							<span id="todayspark2" class="spark"></span>
-						</div>
-						<div class="datas-text">15,000 Pageviews</div>
-					</li>
-					<li>
-						<div>
-							<span id="todayspark3" class="spark"></span>
-						</div>
-						<div class="datas-text">30.55% Bounce Rate</div>
-					</li>
-					<li>
-						<div>
-							<span id="todayspark4" class="spark"></span>
-						</div>
-						<div class="datas-text">$16,00 Revenue/Day</div>
-					</li>
-					<li>
-						<div>
-							<span id="todayspark5" class="spark"></span>
-						</div>
-						<div class="datas-text">12,000000 visitors every Month</div>
-					</li>
-				</ul>
-			</div>
-
 
 		</div>
 		<br> <br>
@@ -149,7 +88,7 @@
 				lat : 11.709757,
 				lng : 108.478252
 			},
-			zoom : 10,
+			zoom : 12,
 			mapTypeId : 'roadmap'
 		});
 

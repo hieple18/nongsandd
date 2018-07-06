@@ -5,8 +5,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <jsp:include page="../form_page/page-head.jsp"></jsp:include>
 <div class="container">
-	<form:form class="form-horizontal form-label-left" id="register_form" modelAttribute="user"
-		action="${action}" style="padding-top: 50px">
+	<form:form class="form-horizontal form-label-left" id="register_form" modelAttribute="trader"
+		action="/NongSanDD/TempNB/tao-tk" style="padding-top: 50px">
 
 		<div class="item form-group">
 			<label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">Họ
@@ -47,12 +47,12 @@
 				Điện Thoại <span class="required">*</span></label>
 			<div class="col-md-2 col-sm-6 col-xs-12"
 				style="position: relative; display: table; border-collapse: separate;">
-				<form:input type="tel" id="telephone" name="phone" required="required"
-					class="form-control col-md-7 col-xs-12" path="phoneNum" />
+				<form:input type="tel" id="telephone" required="required" value="${phone}"
+					class="form-control col-md-7 col-xs-12" path="phoneNum" readonly="true"/>
 			</div>
 		</div>
-		<input type="hidden" name="address.lat" id="map_lat"/>
-		<input type="hidden" name="address.lng" id="map_lng"/>
+		<input type="hidden" name="address.lat" id="map_lat" value="0"/>
+		<input type="hidden" name="address.lng" id="map_lng" value="0"/>
 		<div class="item form-group">
 			<label class="control-label col-md-3 col-sm-3 col-xs-12"
 				for="address">Tỉnh <span class="required">*</span>
@@ -77,13 +77,13 @@
 				for="address">Phường/Xã <span class="required">*</span>
 			</label>
 			<div class="col-md-2 col-sm-6 col-xs-12">
-				<select id="select-commune"
+				<form:select id="select-commune" name="communeID" path="commune"
 					data-live-search="true" class="form-control col-xs-12">
-					<option value="0">--Chọn phường/xã--</option>
+					<option>--Chọn phường/xã--</option> 
 					<c:forEach var="commune" items="${communes}">
 						<option value="${commune.communeID}">${commune.name}</option>
 					</c:forEach>
-				</select>
+				</form:select>
 			</div>
 			<label class="control-label col-md-2 col-sm-3 col-xs-12"
 				for="address">Thôn/Xóm <span class="required">*</span>
@@ -146,66 +146,121 @@ function submitRegisterForm(){
 	$("#register_form").submit();
 }
 
-	$(document).ready(function() {
-		$('#register_form').validate({
-			rules : {
-				name : {
-					required : true,
-					minlength : 2
-				},
-				address : {
-					required : true,
-					minlength : 10
-				},
-				phone : {
-					required : true,
-					minlength : 8
-				},
-				password : {
-					required : true,
-					minlength : 6
-				},
-				confirm_password : {
-					required : true,
-					equalTo : "#password"
-				},
-				communeID : {
-					required : true,
-				},
-				hamletID : {
-					required : true,
-				}
+function validatePhoneNumber(phone) {
+    var flag = false;
+    phone = phone.replace('(+84)', '0');
+    phone = phone.replace('+84', '0');
+    if (phone != '') {
+        var firstNumber = phone.substring(0, 2);
+        if ((firstNumber == '09' || firstNumber == '08') && phone.length == 10) {
+            if (phone.match(/^\d{10}/)) {
+                flag = true;
+            }
+        } else if (firstNumber == '01' && phone.length == 11) {
+            if (phone.match(/^\d{11}/)) {
+                flag = true;
+            }
+        }
+    }
+    return flag;
+}
+
+$("#telephone").change(function(){
+	var phoneNum = $(this).val();
+	if(!validatePhoneNumber(phoneNum)){
+		$.alert({
+               title: 'Lỗi',
+               icon: 'fa fa-warning',
+               type: 'orange',
+               content: 'Số điện thoại ' + phoneNum + ' không hợp lệ. vui lòng nhập lại.',
+           });
+		
+		$("#telephone").val("");
+		$("#telephone").focus();
+	}else{
+		$.ajax({
+			type : "GET",
+			data : {
+				phoneNum : phoneNum
 			},
-			messages : {
-				address : {
-					required : "Vui lòng nhập địa chỉ",
-					minlength : "Địa chỉ Phải ít nhất 10 kí tự"
-				},
-				phone : {
-					required : "Vui lòng nhập số điện thoại",
-					minlength : "SDT Phải ít nhất 8 kí tự"
-				},
-				name : {
-					required : "Vui lòng nhập tên",
-					minlength : "Tên Phải ít nhất 2 kí tự"
-				},
-				password : {
-					required : "Vui lòng nhập mật khẩu",
-					minlength : "mật khẩu phải có ít nhất 6 kí tự"
-				},
-				confirm_password : {
-					required : "Vui lòng nhập lại mật khẩu",
-					equalTo : "Mật khẩu nhập lại không trùng"
-				},
-				communeID : {
-					required : "Vui lòng chọn",
-				},
-				hamletID : {
-					required : "Vui lòng chọn",
+			url : "/NongSanDD/TempNB/kiem-tra-sdt",
+			success : function(response) {
+				if(response === 1){
+					$.alert({
+                           title: 'Lỗi',
+                           icon: 'fa fa-warning',
+                           type: 'orange',
+                           content: 'Số điện thoại ' + phoneNum + ' này đã được dùng để đăng kí tài khoản, vui lòng nhập số khác.',
+                       });
+					
+					$("#telephone").val("");
+					$("#telephone").focus();
 				}
 			}
 		});
+	}
+});
+
+$(document).ready(function() {
+	$('#register_form').validate({
+		rules : {
+			name : {
+				required : true,
+				minlength : 4,
+				maxlength: 30
+			},
+			age : {
+				maxlength: 3
+			},
+			phone : {
+				required : true,
+				minlength : 8
+			},
+			'account.password' : {
+				required : true,
+				minlength : 6,
+				maxlength : 40
+			},
+			confirm_password : {
+				required : true,
+				equalTo : "#password"
+			},
+			hamletID : {
+				required : true,
+			}
+		},
+		messages : {
+			name : {
+				required : "Vui lòng nhập địa chỉ",
+				minlength : "Tên Phải ít nhất 4 kí tự",
+				maxlength : "Tên tối đa 30 kí tự"
+			},
+			age : {
+				maxlength : "Tuổi tối đa 3 kí tự"
+			},
+			phone : {
+				required : "Vui lòng nhập số điện thoại",
+				minlength : "SDT Phải ít nhất 8 kí tự"
+			},
+			name : {
+				required : "Vui lòng nhập tên",
+				minlength : "Tên Phải ít nhất 2 kí tự"
+			},
+			'account.password' : {
+				required : "Vui lòng nhập mật khẩu",
+				minlength : "mật khẩu phải có ít nhất 6 kí tự",
+				maxlength : "mật khẩu tối đa 40 kí tự"
+			},
+			confirm_password : {
+				required : "Vui lòng nhập lại mật khẩu",
+				equalTo : "Mật khẩu nhập lại không trùng"
+			},
+			hamletID : {
+				required : "Vui lòng chọn",
+			}
+		}
 	});
+});
 </script>
 
 <script>

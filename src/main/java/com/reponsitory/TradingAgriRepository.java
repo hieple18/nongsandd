@@ -15,10 +15,10 @@ import com.entity.TradingAgri;
  */
 public interface TradingAgriRepository extends JpaRepository<TradingAgri, Integer>{
 
-	@Query("select t.agriculture.id from TradingAgri t where t.trader.id = ?1")
+	@Query("select t.agriculture.id from TradingAgri t where t.trader.id = ?1 and t.agriculture.status = 1")
 	public List<Integer> getTradingAgriByTrader(int traderID);
 	
-	@Query("select t.agriculture.name from TradingAgri t where t.trader.id = ?1")
+	@Query("select t.agriculture.name from TradingAgri t where t.trader.id = ?1 and t.agriculture.status = 1")
 	public List<String> getTradingAgriName(int traderID);
 	
 	@Transactional

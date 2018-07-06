@@ -1,7 +1,5 @@
 package com.controllers;
 
-import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +77,7 @@ public class TraderController {
 	}
 
 	// handle my profile request
-	@RequestMapping("/")
+	@RequestMapping(value={"/",""})
 	public String home(ModelMap m){
 		int traderID = getTraderID();
 		
@@ -117,6 +115,9 @@ public class TraderController {
 
 		Address address = traderService.getAddress(trader.getId());
 		m.addAttribute("address", address);
+		
+		List<String> tradingAgris = saleService.getTradingAgriName(getTraderID());
+		m.addAttribute("tradingAgris", tradingAgris);
 		
 		m.addAttribute("notifies", getNotify());
 		m.addAttribute("userName", getTraderName());
@@ -165,7 +166,7 @@ public class TraderController {
 		traderService.updateProfile(trader, oldTrader,  hamletID, tradingList);
 		return "redirect:/NhaBuon";
 	}
-
+	
 	@RequestMapping(value = "/dang-nhap")
 	public String login(ModelMap m) {
 		return "login";
@@ -220,82 +221,11 @@ public class TraderController {
 
 	// end handle user profile request
 	////////////////////////////////////////////////////////////
-	// handle price request
-
-	@RequestMapping(value = "/create-random-price")
-	@ResponseBody
-	public boolean createRandomPrice() throws IOException {
-		agricultureService.randomPrice();
-		return true;
-	}
-
-	// get today price
-	@RequestMapping(value = "/gia-hom-nay")
-	public String getPriceList(ModelMap m) {
-
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-
-		List<Object[]> agriPrices = agricultureService.getPriceToday();
-		m.addAttribute("agriPrices", agriPrices);
-
-		Date minDate = agricultureService.getMinDatePrice();
-		m.addAttribute("minDate", minDate);
-		m.addAttribute("title", "Hôm Nay");
-
-		m.addAttribute("notifies", getNotify());
-		m.addAttribute("userName", getTraderName());
-		return "trader/price-list";
-	}
-
-	// get price by date
-	@RequestMapping(value = "/gia-ngay-truoc")
-	public String getPriceListByDate(@RequestParam("date") String date, ModelMap m) {
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-
-		List<Object[]> agriPrices = agricultureService.getPriceByday(date);
-		m.addAttribute("agriPrices", agriPrices);
-
-		Date minDate = agricultureService.getMinDatePrice();
-		m.addAttribute("minDate", minDate);
-		String title = "Ngày " + date.toString();
-		m.addAttribute("title", title);
-
-		m.addAttribute("notifies", getNotify());
-		m.addAttribute("userName", getTraderName());
-		return "trader/price-list";
-	}
-
-	// price chart
-	@RequestMapping(value = "/bieu-do-gia")
-	public String getPriceChart(@RequestParam("id") int id, ModelMap m) {
-		List<Float> agriPrices = agricultureService.getPriceChart(id);
-
-		List<Agriculture> agricultures = agricultureService.getAllAgri();
-		m.addAttribute("agris", agricultures);
-
-		List<AgriCategory> agriCategories = agricultureService.getAllAgriCategory();
-		m.addAttribute("agriCategories", agriCategories);
-
-		String currAgriName = agricultures.get(id - 1).getName();
-		agricultures.remove(id - 1);
-
-		m.addAttribute("agriPrices", agriPrices);
-		m.addAttribute("currAgriName", currAgriName);
-
-		m.addAttribute("notifies", getNotify());
-		m.addAttribute("userName", getTraderName());
-		return "trader/price-chart";
-	}
-
-	// end handle price request
-	/////////////////////////////////////////////////////
 	// handle sale request
 
 	@RequestMapping("/ds-tin-ban")
 	public String saleList(ModelMap m) {
-		List<SaleScore> minings = saleService.recommentSale(getTraderID());
+		List<SaleScore> minings = saleService.recommendSale(getTraderID());
 		m.addAttribute("minings", minings);
 		
 		m.addAttribute("notifies", getNotify());

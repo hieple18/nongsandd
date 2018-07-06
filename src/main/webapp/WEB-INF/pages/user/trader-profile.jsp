@@ -37,7 +37,7 @@
 							</div>
 							<div class="single-item">
 								<div class="icon">
-									<i class="icon-wheat"></i>
+									<i class="icon-nature-1"></i>
 								</div>
 								<div class="count name color1">
 									Ngày Đăng ký: <span style="color: #333">
@@ -46,6 +46,20 @@
 								<div class="name color1">
 									Tin Đã Mua: <span style="color: #333"> 0</span>
 								</div>
+							</div>
+							<div class="single-item">
+								<div class="icon">
+									<i class="icon-wheat"></i>
+								</div>
+								<div class="count name color1"
+									style="display: -webkit-inline-box; margin-bottom: 5px">
+									Nông sản kinh doanh: &nbsp &nbsp <span style="color: #333">
+									<c:forEach var="item" items="${tradingAgris}">
+										${item}, 
+									</c:forEach>
+									</span>
+								</div>
+
 							</div>
 							<div class="single-item">
 								<div class="icon">
@@ -191,7 +205,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Thêm Nhận Xét</h4>
+					<h4 class="modal-title">Cập nhập Nhận Xét</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal form-label-left" id="editRatingForm"
@@ -261,7 +275,23 @@
 		$("#editCmt").modal("show");
 	}
 	
-	
+	function deleteCmt(id){
+		$.confirm({
+	        content: 'Bạn có muốn xóa nhận xét này',
+	        icon: 'fa fa-question-circle',
+	        animation: 'scale',
+	        closeAnimation: 'scale',
+	        opacity: 0.5,
+	        buttons: {
+	            'confirm': function (){
+	            	window.location.href = "/NongSanDD/NguoiDung/xoa-nhan-xet?id=" + id;
+	            	
+	            },
+	            cancel: function () {
+	            }
+	        }
+	    });
+	}
 
 	$("#trader-rating").barrating({
 		theme: 'fontawesome-stars',

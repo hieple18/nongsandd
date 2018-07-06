@@ -212,6 +212,12 @@ input, textarea {
 	-webkit-transition: all 0.3s ease-in-out;
 	transition: all 0.3s ease-in-out;
 }
+.tital-verify{
+text-align: -webkit-center;
+    margin: 20px;
+    font-size: 20px;
+    color: #2190b1;
+}
 
 .clear_fix {
 	clear: both;
@@ -408,6 +414,13 @@ input, textarea {
 .autor a {
 	position: relative;
 	margin-right: 30px;
+	color: #5cb85c;
+	font-weight: 500;
+	font-size: 18px;
+}
+
+.autor a:hover {
+	color: #337ab7;
 }
 
 .autor .first-login:after {
@@ -1556,8 +1569,7 @@ ease-out
 }
 /*============================ Footer =====================*/
 footer {
-	padding-top: 60px;
-	background: #363636;
+	padding-top: 60px;	
 }
 
 footer .main_footer .footer_logo a.tran3s {

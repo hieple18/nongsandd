@@ -37,6 +37,10 @@
 	direction: ltr;
 	cursor: pointer;
 }
+
+.hide-btn-confirm{
+display: none
+}
 </style>
 
 <div class="container">
@@ -70,12 +74,12 @@
 			</div>
 
 			<label class="control-label col-md-2 col-sm-3 col-xs-12" for="phone">Số
-				Lượng <span class="required">*</span>
+				Lượng
 			</label>
 			<div class="col-md-2 col-sm-6 col-xs-12"
 				style="position: relative; display: table; border-collapse: separate;">
-				<input type="number" class="form-control col-md-5 col-xs-12"
-					name="quantity" placeholder="Đơn vị: Ngìn cây"/> 
+				<input type="number" class="form-control col-md-5 col-xs-12" value = "0"
+					name="quantity" id="quantity" placeholder="Đơn vị: Ngìn cây"/> 
 			</div>
 		</div>
 
@@ -142,11 +146,11 @@
 			value="${address.lng}" />
 		<div class="item form-group">
 			<label class="control-label col-md-3 col-sm-3 col-xs-12">Giá
-				Khởi Điểm </label>
+				Đề Xuất </label>
 			<div class="col-md-6 col-sm-6 col-xs-12"
 				style="position: relative; display: table; border-collapse: separate;">
-				<input type="text" class="form-control col-md-5 col-xs-12"
-					name="price" placeholder="Đơn vị: Triệu"/> 
+				<input type="number" class="form-control col-md-5 col-xs-12" value = "0"
+					name="price" id="price" placeholder="Đơn vị: Triệu"/> 
 			</div>
 		</div>
 		<div class="item form-group">
@@ -177,7 +181,7 @@
 			<div class="col-md-9 col-md-offset-3">
 
 				<a class="btn btn-success" onclick="submitUploadSaleForm()">Đăng
-					Kí</a>
+					Tin</a>
 				<button class="btn btn-primary" style="margin-left: 50px">Hủy
 					Bỏ</button>
 			</div>
@@ -192,6 +196,26 @@
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQvN2xdEEQKXzw1vlLYZTtXhqyjZv_IHw&libraries=places"></script>
 
 <script>	
+if(${creatable} === false){
+	$.confirm({
+		content : 'Một tháng bạn chỉ được đăng 10 tin bán, tháng này bạn đã đăng đủ 10 tin. Không thể thực hiện thao tác này!',
+		icon : 'fas fa-exclamation',
+		title: 'Lỗi',
+		type: 'orange',
+		animation : 'scale',
+		closeAnimation : 'scale',
+		opacity : 0.5,
+		buttons : {
+			'Đồng Ý': {
+				btnClass: 'btn-blue',
+				action: function (){
+					window.location.href = "/NongSanDD/NguoiDung/";
+				}
+		    }
+		}
+	});
+}
+
 $(document).ready(function() {
 	$("#agri-select").chosen();
 	
@@ -210,24 +234,32 @@ $(document).ready(function() {
 	$('#sale_info_form').validate({
 		rules : {
 			area : {
-				required : true
+				required : true,
+				maxlength: 10 
 			},
 			quantity : {
-				required : true
+				maxlength: 10 
 			},
 			price : {
-				required : true
+				maxlength: 10 
+			},
+			sellingDescribe : {
+				maxlength: 200
 			}
 		},
 		messages : {
 			area : {
-				required : "Vui lòng nhập diện tích"
+				required : "Vui lòng nhập diện tích",
+				maxlength : "Diện tích không quá 10 đơn vị"
 			},
 			quantity : {
-				required : "Vui lòng nhập số lượng"
+				maxlength : "Số Lượng không quá 10 đơn vị"
 			},
 			price : {
-				required : "Vui lòng nhập giá"
+				maxlength : "Giá không quá 10 đơn vị"
+			},
+			sellingDescribe : {
+				maxlength : "mô tả không quá 200 kí tự"
 			}
 		}
 	});
@@ -283,6 +315,13 @@ $(document).ready(function() {
                             icon: 'fa fa-warning',
                             type: 'orange',
                             content: 'Một tin bán chỉ được đăng tối đa 10 hình ảnh',
+                            buttons: {
+        	                    "Đồng ý": {
+        	                    	btnClass: 'btn-blue',
+        			        		action: function (){
+        			        		}
+        	                    }
+        	                }
                         });
 					}
 				}
@@ -384,7 +423,6 @@ $(document).ready(function() {
 			});
 		});
 		
-		
 		return deferred.promise();
 	}
 	
@@ -397,13 +435,23 @@ $(document).ready(function() {
 
 <script>
 	function submitUploadSaleForm(){
+		$("#quantity").val(0);
+		$("#price").val(0);
+		
 		if($('#sale_info_form').valid()){
 			if(countImage_h > 0){
 				$.confirm({
 				    icon: 'fa fa-spinner fa-spin',
 				    type: 'green',
 				    title: 'Vui Lòng Chờ!',
-				    content: 'Việc tải hình ảnh lên có thể mất một lúc. Vui lòng chờ!'
+				    content: 'Việc tải hình ảnh lên có thể mất một lúc. Vui lòng chờ!',
+			    	buttons: {
+			    		"Đồng ý": {
+	                    	btnClass: 'hide-btn-confirm',
+			        		action: function (){
+			        		}
+	                    }
+	                }
 				});
 				
 				$.when(submitImg()).done(function(){
@@ -416,7 +464,14 @@ $(document).ready(function() {
 				    icon: 'fa fa-warning',
 				    type: 'orange',
 				    title: 'Lỗi!',
-				    content: 'Vui lòng đăng ít nhất 1 hình ảnh!'
+				    content: 'Vui lòng đăng ít nhất 1 hình ảnh!',
+				    buttons: {
+	                    "Đồng ý": {
+	                    	btnClass: 'btn-blue',
+			        		action: function (){
+			        		}
+	                    }
+	                }
 				});
 			}
 			

@@ -38,8 +38,17 @@ public final class Constant {
 	/** The Constant COLUMN_LENGTH_500_LIMIT. */
 	public static final int COLUMN_LENGTH_500_LIMIT = 500;
 	
-	public static final int SALE_EXPERID = -20;
+	public static final int SALE_EXPERID = 30;
 
+	public static final int NOT_VERIFY = 0;
+	public static final int VERIFIED = 1;
+	public static final int WAIT_TO_REGISTER = -1;
+	
+	// for mining
+	public static final int AGRI_M = 1;
+	public static final int AREA_M = 2;
+	public static final int COMMUNE_M = 3;
+	
 	// STATE
 	public static final int DELETE_STATE = -1;
 	public static final int DISABLE_STATE = 0;
@@ -59,10 +68,10 @@ public final class Constant {
 	public static final int U_TRADER_CMT = 3;
 
 	public static final String ROLE_USER = "ROLE_USER";
-
 	public static final String ROLE_TRADER = "ROLE_TRADER";
-
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
+	
+	public static final int SALE_LIMIT = 3;
 
 	// USER
 	public static final String GET_USER_NOTIF_CONTENT(int type, String name) {
@@ -113,7 +122,7 @@ public final class Constant {
 	public static final String GET_TRADER_NOTIF_LINK(int type, int id) {
 		switch (type) {
 		case T_CONFIRM_REQUEST:
-			return "/NongSanDD/NhaBuon/ds-yeu-cau";
+			return "/NongSanDD/NhaBuon/tin-da-mua";
 		case T_UPDATE_REQUEST:
 			return "/NongSanDD/NhaBuon/chi-tiet-tin-ban?id=" + id + "&state=2";
 		case T_UPDATE_SELECTED:
@@ -131,6 +140,11 @@ public final class Constant {
 		Calendar currentTime = Calendar.getInstance();
 		Date dateCreate = new Date((currentTime.getTime()).getTime());
 		return dateCreate;
+	}
+	
+	public static final int CURRENT_MONTH() {
+    	Calendar cal = Calendar.getInstance();
+    	return cal.get(Calendar.MONTH) + 1;
 	}
 
 	public static final Long DATE_IN_MILLISECONDS() {
@@ -191,4 +205,36 @@ public final class Constant {
 			return 0;
 		}
 	}
+	
+	// twilio api
+	public static final String ACCOUNT_SID = "ACf1d685441305f7894555f4b0de1a590e";
+    public static final String AUTH_TOKEN = "125933e2dee320c0b8fdbc40660ab88e";
+    public static final String TWILIO_NUMBER = "+19704102720";
+    
+    public static String GET_COMMUNE_SHORT_NAME(int id){
+    	switch (id) {
+		case 0:
+			return "TT Dran";
+		case 1:
+			return  "TT TM";
+		case 2:
+			return  "Lạc Xuân";
+		case 3:
+			return  "Đạ Ròn";
+		case 4:
+			return  "Lạc Lâm";
+		case 5:
+			return  "Ka Đô";
+		case 6:
+			return  "Q Lập";
+		case 7:
+			return  "KaDon";
+		case 8:
+			return  "Tu Tra";
+		case 9:
+			return  "Pro";
+		default:
+			return "";
+		}
+    }
 }

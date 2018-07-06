@@ -43,11 +43,36 @@ public class User implements Serializable {
     @Column(name="dateCreate") 
     private Date dateCreate;
     
-    @OneToOne()
+    @Column(name="code") 
+    private int code;
+    
+    @Column(name="status")
+    private int status;
+    
+    @Column(name="commune")
+    private int commune;
+    
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	@OneToOne()
     @JoinColumn(name = "account", referencedColumnName = "username")
     private Account account;
     
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
     
@@ -70,11 +95,22 @@ public class User implements Serializable {
     private Set<UserReaction> reactions = new HashSet<>();
 
     ////////////////////////////
-    
+
     public User(){
     	this.ratingSum = 0;
+    	this.age = 0;
+    	this.code = 0;
+    	this.status = 0;
     }
     
+	public int getCommune() {
+		return commune;
+	}
+
+	public void setCommune(int commune) {
+		this.commune = commune;
+	}
+
 	public int getAge() {
 		return age;
 	}

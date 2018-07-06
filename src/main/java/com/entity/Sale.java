@@ -32,26 +32,23 @@ public class Sale implements Serializable{
     @Column(name = "id")
     private int id;
     
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = true)
     private float quantity;
     
     @Column(name = "area")
     private float area;
     
-    @Column(name = "sellingDescribe", length = Constant.COLUMN_LENGTH_300_LIMIT)
+    @Column(name = "sellingDescribe", length = Constant.COLUMN_LENGTH_300_LIMIT, nullable = true)
     private String describe;
     
     @Column(name = "dateCreate")
     private Date dateCreate;
     
-    @Column(name = "price")
+    @Column(name = "price", nullable = true)
     private long price;
     
     @Column(name = "requestCount")
     private int requestCount;
-    
-    @Column(name = "week")
-    private int week;
     
     @Column(name = "communeID")
     private int communeID;
@@ -88,14 +85,6 @@ public class Sale implements Serializable{
 
 	public int getCommuneID() {
 		return communeID;
-	}
-
-	public int getWeek() {
-		return week;
-	}
-
-	public void setWeek(int week) {
-		this.week = week;
 	}
 
 	public void setCommuneID(int communeID) {

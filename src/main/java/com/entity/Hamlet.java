@@ -54,6 +54,10 @@ public class Hamlet implements Serializable{
 	public Hamlet() {
 		
 	}
+	
+	public Hamlet(int hamletID) {
+		this.hamletID = hamletID;
+	}
 
 	public int getHamletID() {
 		return hamletID;

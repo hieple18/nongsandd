@@ -11,7 +11,7 @@
 			<div class="row">
 				<div class="col-md-4 col-sm-5 col-xs-6 logo-responsive">
 					<div class="logo-area">
-						<a href="/NongSanDD/" class="pull-left logo"><img
+						<a href="/NongSanDD/NhaBuon" class="pull-left logo"><img
 							src="/NongSanDD/resources/images/logo/logo.png" alt="LOGO"></a>
 					</div>
 				</div>
@@ -94,12 +94,11 @@ function updateNotify(id){
 	<div class="container" style="height: 50px;">
 		<nav class="menuzord pull-left" id="main_menu">
 			<ul class="menuzord-menu">
-				<li><a href="/NongSanDD/NhaBuon">Trang Chủ</a></li>
-				<li><a href="/NongSanDD/NhaBuon/gia-hom-nay">Danh Sách Giá</a></li>
-				<li class="current_page"><a href="/NongSanDD/NhaBuon/">Nhà Buôn</a></li>
-				<li><a href="/NongSanDD/NhaBuon/ds-tin-ban">Tin Bán</a></li>
-				<li><a href="/NongSanDD/NhaBuon/ds-yeu-cau">DS Yêu Cầu</a></li>
-				<li><a href="/NongSanDD/NhaBuon/tin-da-mua">Tin Đã Mua</a></li>
+				<li id="price-page"><a href="/NongSanDD/gia-hom-nay?page=3">Danh Sách Giá</a></li>
+				<li id="trader-page"><a href="/NongSanDD/NhaBuon/">Trang Chủ</a></li>
+				<li id="sale-page"><a href="/NongSanDD/NhaBuon/ds-tin-ban">Tin Bán</a></li>
+				<li id="request-page"><a href="/NongSanDD/NhaBuon/ds-yeu-cau">DS Yêu Cầu</a></li>
+				<li id="selected-page"><a href="/NongSanDD/NhaBuon/tin-da-mua">Tin Đã Mua</a></li>
 			</ul>
 			<!-- End of .menuzord-menu -->
 		</nav>
@@ -110,3 +109,17 @@ function updateNotify(id){
 	<!-- End of .conatiner -->
 </div>
 <!-- End of .theme_menu -->
+<script>
+var pathname = window.location.pathname;
+if(pathname.indexOf("gia-hom-nay") !== -1){
+	$("#price-page").addClass("current_page");
+}else if(pathname.indexOf("ds-tin-ban") !== -1){
+	$("#sale-page").addClass("current_page");
+}else if(pathname.indexOf("ds-yeu-cau") !== -1){
+	$("#request-page").addClass("current_page");
+}else if(pathname.indexOf("tin-da-mua") !== -1){
+	$("#selected-page").addClass("current_page");
+}else{
+	$("#trader-page").addClass("current_page");
+}
+</script>

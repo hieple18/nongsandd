@@ -32,7 +32,7 @@ public class Account implements Serializable {
     private String role;
     
     @Column(name="enabled") 
-    private short enabled;
+    private int enabled;
     
     @OneToOne(fetch = FetchType.LAZY,
     cascade =  CascadeType.ALL,
@@ -46,7 +46,7 @@ public class Account implements Serializable {
 
     public Account(){}
     
-	public Account(String userName, String password, String role, short enabled) {
+	public Account(String userName, String password, String role, int enabled) {
 		super();
 		this.userName = userName;
 		this.password = password;
@@ -78,11 +78,11 @@ public class Account implements Serializable {
 		this.role = role;
 	}
 
-	public short getEnabled() {
+	public int getEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(short enabled) {
+	public void setEnabled(int enabled) {
 		this.enabled = enabled;
 	}
 

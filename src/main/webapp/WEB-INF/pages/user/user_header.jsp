@@ -9,7 +9,7 @@
 			<div class="row">
 				<div class="col-md-4 col-sm-5 col-xs-6 logo-responsive">
 					<div class="logo-area">
-						<a href="/NongSanDD/" class="pull-left logo"><img
+						<a href="/NongSanDD/NguoiDung" class="pull-left logo"><img
 							src="/NongSanDD/resources/images/logo/logo.png" alt="LOGO"></a>
 					</div>
 				</div>
@@ -38,15 +38,19 @@
 													$.confirm({
 												        content: "${notify.content}" + "bạn có muốn khôi phục lại tin bán này cho các Nhà buôn khác có thể xem",
 												        icon: 'fa fa-question-circle',
+												        title: 'Xác nhận',
 												        animation: 'scale',
 												        closeAnimation: 'scale',
 												        opacity: 0.5,
+												        type: 'orange',
 												        buttons: {
-												            'Đồng Ý': function (){
-												            	updateNotifyNRedirect(${notify.id}, "${notify.link}");
-												            	
+												            'Đồng Ý': {
+												        		btnClass: 'btn-blue',
+												        		action: function (){
+												        			updateNotifyNRedirect(${notify.id}, "${notify.link}");
+												        		}
 												            },
-												            cancel: function () {
+												            'Hủy' : function () {
 												            	updateNotify(${notify.id});
 												            }
 												        }
@@ -131,13 +135,11 @@ function updateNotifyNRedirect(id, link){
 	<div class="container" style="height: 50px;">
 		<nav class="menuzord pull-left" id="main_menu">
 			<ul class="menuzord-menu">
-				<li><a href="/NongSanDD/NguoiDung">Trang Chủ</a></li>
-				<li><a href="/NongSanDD/NguoiDung/gia-hom-nay">Danh Sách
+				<li id="price-page"><a href="/NongSanDD/gia-hom-nay?page=2">Danh Sách
 						Giá</a></li>
-				<li class="current_page"><a href="/NongSanDD/NguoiDung">Người
-						Dùng</a></li>
-				<li><a href="/NongSanDD/NguoiDung/dang-tin">Đăng Tin Bán</a></li>
-				<li><a href="/NongSanDD/NguoiDung/ds-tin-ban">Đăng Tin Bán</a></li>
+				<li id="user-page"><a href="/NongSanDD/NguoiDung">Trang Chủ</a></li>
+				<li id="upload-page"><a href="/NongSanDD/NguoiDung/dang-tin">Đăng Tin Bán</a></li>
+				<li id="sold-page"><a href="/NongSanDD/NguoiDung/ds-tin-ban">Tin Đã Bán</a></li>
 			</ul>
 			<!-- End of .menuzord-menu -->
 		</nav>
@@ -147,4 +149,16 @@ function updateNotifyNRedirect(id, link){
 	</div>
 	<!-- End of .conatiner -->
 </div>
+<script>
+var pathname = window.location.pathname;
+if(pathname.indexOf("gia-hom-nay") !== -1){
+	$("#price-page").addClass("current_page");
+}else if(pathname.indexOf("dang-tin") !== -1){
+	$("#upload-page").addClass("current_page");
+}else if(pathname.indexOf("ds-tin-ban") !== -1){
+	$("#sold-page").addClass("current_page");
+}else{
+	$("#user-page").addClass("current_page");
+}
+</script>
 <!-- End of .theme_menu -->

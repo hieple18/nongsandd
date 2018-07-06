@@ -39,6 +39,7 @@
 						<select class="form-control form-control-lg action_option">
 							<option selected disabled>Chọn</option>
 							<option value="/NongSanDD/NhaBuon/chi-tiet-tin-ban?id=${mining.sale.id}&state=1"> Chi tiết</option>
+							<!-- set id to this value to detected this option need to ask user's confirmation before action -->
 							<option value="${mining.sale.id}"> Gửi Yêu Cầu</option>
 						</select>
 					</td>
@@ -59,7 +60,7 @@
 		$.ajax({
 			type : "GET",
 			data : {
-				saleID : id
+				id : id
 			},
 			url : "/NongSanDD/NhaBuon/gui-yeu-cau",
 			success : function(response) {
@@ -67,6 +68,7 @@
 	                content: 'Gửi yêu cầu thành công',
 	                icon: 'fas fa-check',
 	                animation: 'scale',
+	                type: 'green',
 	                closeAnimation: 'scale',
 	                buttons: {
 	                    okay: {
@@ -82,22 +84,28 @@
 	
 	$("#my_sale_table").on('change','.action_option', function () { 
 	    var value = $(this).val();
-	    if (value >= 0) {
+	    
+	    if (value >= 0) { // value is id. this option need to ask user's confination before acrion
 	    	$.confirm({
-		        content: 'Bạn có đồng ý gửi yêu cầu mua nông sản này cho Nhà Nông không?',
+	    		content: 'Bạn có đồng ý gửi yêu cầu mua nông sản này cho Nhà Nông không?',
 		        icon: 'fa fa-question-circle',
+		        title: 'Xác nhận',
 		        animation: 'scale',
 		        closeAnimation: 'scale',
 		        opacity: 0.5,
+		        type: 'orange',
 		        buttons: {
-		            'Đồng Ý': function (){
-		            	sendRequest(value);
+		        	'Đồng Ý': {
+		        		btnClass: 'btn-blue',
+		        		action: function (){
+			            	sendRequest(value);
+		        		}
 		            },
-		            cancel: function () {
+		            'Hủy' : function () {
 		            }
 		        }
 		    });
-		} else {
+		} else { // value is a link. just follow this link
 			window.location.href = this.value;
 		}
 	});

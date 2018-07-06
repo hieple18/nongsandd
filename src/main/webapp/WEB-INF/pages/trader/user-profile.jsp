@@ -73,15 +73,16 @@
 						</div>
 					</div>
 				</div>
-
-				<button onclick="writeCmt(${user.id})" class="btn btn-primary"
-					style="float: right; margin-top: 20px">
-					<i class="fas fa-plus"> Thêm Đánh Giá</i>
-				</button>
-				<div class="col-sm-12">
-
+				<div class="col-md-12 col-sm-12" style="display: flow-root;">
+					<button onclick="writeCmt(${user.id})" class="btn btn-primary"
+						style="float: right; margin-top: 20px">
+						<i class="fas fa-plus"> Thêm Đánh Giá</i>
+					</button>
+				</div>
+				<div class="col-md-12 col-sm-12">
+				<hr />
 					<c:forEach var="cmt" items="${cmts}">
-						<hr />
+						
 						<div class="review-block">
 							<div class="row">
 								<div class="col-sm-2">

@@ -16,10 +16,15 @@ public interface AgriPriceRepository extends JpaRepository<AgriPrice, Integer> {
 
 	@Query("select min(p.date) from AgriPrice p")
 	public Date getMinDatePrice();
+	
+	@Query("select count(p) from AgriPrice p where p.date=?1")
+	public int checkExistsPriceToday(Date date);
 
-	@Query("select a.id, a.name, a.agriCategory.id, p.price, p.priceChange from AgriPrice p, Agriculture a where "
-			+"p.date=?1 and a.id = p.agriculture.id")
-	public List<Object[]> getPriceByday(Date date);
+	@Query("select a from AgriPrice a where a.date=?1 and a.agriculture.status = 1")
+	public List<AgriPrice> getPriceByday(Date date);
+	
+	@Query("select a.agriculture.id, a.price from AgriPrice a where a.date=?1")
+	public List<Object[]> getForHashMap(Date date);
 	
 	@Query("select p.price from AgriPrice p where p.agriculture.id=?1")
 	public List<Float> getPriceChart(int id);
@@ -27,6 +32,15 @@ public interface AgriPriceRepository extends JpaRepository<AgriPrice, Integer> {
 	@Query("select p.price from AgriPrice p where p.agriculture.id=?1 and p.date = ?2")
 	public float getPriceToCaculChange(int id, Date date);
 	
-	@Query("select a from AgriPrice a where a.date = ?1")
+	@Query("select a from AgriPrice a where a.date = ?1 and a.agriculture.status = 1")
 	public List<AgriPrice> getPriceToUpdate(Date date);
+	
+	@Query("select min(a.price) from AgriPrice a where extract(month from a.date) = ?1 and a.agriculture.id = ?2 and a.agriculture.status = 1")
+	public float getmin(int month, int id);
+	
+	@Query("select max(a.price) from AgriPrice a where extract(month from a.date) = ?1 and a.agriculture.id = ?2 and a.agriculture.status = 1")
+	public float getmax(int month, int id);
+	
+	@Query("select avg(a.price) from AgriPrice a where extract(month from a.date) = ?1 and a.agriculture.id = ?2 and a.agriculture.status = 1")
+	public float getavg(int month, int id);
 }

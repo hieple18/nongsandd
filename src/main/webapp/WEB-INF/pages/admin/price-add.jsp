@@ -17,7 +17,6 @@
 								<thead>
 									<tr>
 										<th style="width: 10%">#</th>
-										<th style="width: 25%">Mục</th>
 										<th style="width: 40%">Tên</th>
 										<th style="width: 25%">Giá</th>
 									</tr>
@@ -28,8 +27,7 @@
 										<tr>
 											<td align="center">${price.agriID}<input type="hidden"
 											 name="prices[${status.index}].agriID" value="${price.agriID}" ></td>
-											<td></td>
-											<td></td>
+											<td>${price.name}</td>
 											<td><input name="prices[${status.index}].price" /></td>
 										</tr>
 									</c:forEach>

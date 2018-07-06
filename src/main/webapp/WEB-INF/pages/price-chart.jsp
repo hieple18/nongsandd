@@ -1,12 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:include page="form_page/page-head.jsp"></jsp:include>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="security"%>
+<c:if test="${page == 1}"><jsp:include page="form_page/page-head.jsp"></jsp:include></c:if>
+<c:if test="${page == 2}">
+	<security:authorize access="hasRole('ROLE_USER')">
+		<jsp:include page="form_page/user-head.jsp"></jsp:include>
+	</security:authorize>
+</c:if>
+<c:if test="${page == 3}">
+	<security:authorize access="hasRole('ROLE_TRADER')">
+		<jsp:include page="form_page/trader-head.jsp"></jsp:include>
+	</security:authorize>
+</c:if>
 <div class=container style="padding-top: 30px">
 	<div id="line-example">
 		<label style="text-align: center">So Sánh Với: </label> 
 		<select data-style="btn-primary" id="compare_select" style="width: 150px; margin-bottom: 14px;" 
 			data-placeholder="Chọn Nông Sản">
+			<option selected disabled>Chọn</option>
 			<c:forEach var="category" items="${agriCategories}">
 				<optgroup label="${category.name }">
 					<c:forEach var="agri" items="${agris}">

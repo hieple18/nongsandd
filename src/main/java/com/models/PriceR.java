@@ -7,15 +7,17 @@ package com.models;
 public class PriceR {
 	float price;
 	int agriID;
+	String name;
 
 	public PriceR() {
 		super();
 	}
 
-	public PriceR(float price, int agriID) {
+	public PriceR(float price, int agriID, String name) {
 		super();
 		this.price = price;
 		this.agriID = agriID;
+		this.name = name;
 	}
 
 	public float getPrice() {
@@ -32,6 +34,12 @@ public class PriceR {
 	public void setAgriID(int agriID) {
 		this.agriID = agriID;
 	}
-	
-	
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

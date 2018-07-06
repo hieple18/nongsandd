@@ -59,15 +59,19 @@ $(document).ready(function() {
 		$.confirm({
 	        content: 'Bạn có muốn các nhận yêu cầu của Nhà buôn',
 	        icon: 'fa fa-question-circle',
+	        title: 'Xác nhận',
 	        animation: 'scale',
 	        closeAnimation: 'scale',
+	        type: 'green',
 	        opacity: 0.5,
 	        buttons: {
-	            'Đồng Ý': function (){
-	            	cofirmRequest(id);
-	            	
+	            'Đồng Ý': {
+	        		btnClass: 'btn-blue',
+	        		action: function (){
+	        			cofirmRequest(id);
+	        		}
 	            },
-	            cancel: function () {
+	            'Hủy' : function () {
 	            }
 	        }
 	    });
@@ -75,36 +79,33 @@ $(document).ready(function() {
 });
 
 function cofirmRequest(id){
-	window.location.href = "NguoiDung/xac-nhan-yeu-cau?id="+id;
+	window.location.href = "/NongSanDD/NguoiDung/xac-nhan-yeu-cau?id="+id;
 }
 	
-	$('#sale_request').DataTable({
-		rowReorder: {
-            selector: 'td:nth-child(2)'
-        },
-        responsive: true,
-		"bLengthChange" : false,
-		"bFilter" : true,
-		"bInfo" : true,
-		"bAutoWidth" : false,
-		"columnDefs" : [ {
-			"targets" : [ 0, 1, 5],
-			"orderable" : false
-		} ],
-		"language" : {
-			search : "",
-			"zeroRecords" : "Không Có Dữ Liệu Nào Được Tìm Thấy",
-			"info" : "Trang _PAGE_ Trên _PAGES_ Trang",
-			"emptyTable" : "Không Có Dữ Liệu",
-			"infoEmpty" : "Hiện 0 Đến 0 Của 0 Dòng",
-			"searchPlaceholder" : "Nhập Tên Nông Sản",
-			"paginate" : {
-				"first" : "Đầu",
-				"last" : "Cuối",
-				"next" : "Tiếp",
-				"previous" : "Trước"
-			},
+$('#sale_request').DataTable({
+    responsive: true,
+	"bLengthChange" : false,
+	"bFilter" : true,
+	"bInfo" : true,
+	"bAutoWidth" : false,
+	"columnDefs" : [ {
+		"targets" : [ 0, 1, 5],
+		"orderable" : false
+	} ],
+	"language" : {
+		search : "",
+		"zeroRecords" : "Không Có Dữ Liệu Nào Được Tìm Thấy",
+		"info" : "Trang _PAGE_ Trên _PAGES_ Trang",
+		"emptyTable" : "Không Có Dữ Liệu",
+		"infoEmpty" : "Hiện 0 Đến 0 Của 0 Dòng",
+		"searchPlaceholder" : "Nhập Tên Nông Sản",
+		"paginate" : {
+			"first" : "Đầu",
+			"last" : "Cuối",
+			"next" : "Tiếp",
+			"previous" : "Trước"
 		},
-	});
+	},
+});
 	
 </script>

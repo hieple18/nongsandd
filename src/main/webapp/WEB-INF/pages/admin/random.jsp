@@ -6,8 +6,8 @@
 	<section class="wrapper">
 		<form action="/NongSanDD/admin/random-user" method="post" class = "form-vertical"
 			enctype="multipart/form-data">
-			<input type="file" name="file" accept=".xls,.xlsx"> <input
-				type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+			<input type="file" name="file" accept=".xls,.xlsx" /> 
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 			<input type="submit" value="random user">
 		</form><br>
 		

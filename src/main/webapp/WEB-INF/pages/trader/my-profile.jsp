@@ -37,7 +37,7 @@
 							</div>
 							<div class="single-item">
 								<div class="icon">
-									<i class="icon-wheat"></i>
+									<i class="icon-nature-1"></i>
 								</div>
 								<div class="count name color1">
 									Ngày Đăng ký: <span style="color: #333">
@@ -46,6 +46,20 @@
 								<div class="name color1">
 									Tin Đã Mua: <span style="color: #333"> 0</span>
 								</div>
+							</div>
+							<div class="single-item">
+								<div class="icon">
+									<i class="icon-wheat"></i>
+								</div>
+								<div class="count name color1"
+									style="display: -webkit-inline-box; margin-bottom: 5px">
+									Nông sản kinh doanh: &nbsp &nbsp <span style="color: #333">
+									<c:forEach var="item" items="${tradingAgris}">
+										${item}, 
+									</c:forEach>
+									</span>
+								</div>
+
 							</div>
 							<div class="single-item">
 								<div class="icon">
@@ -73,7 +87,7 @@
 					</div>
 				</div>
 
-				<<a href="/NongSanDD/NhaBuon/cap-nhap-thong-tin" class="btn btn-primary"
+				<a href="/NongSanDD/NhaBuon/cap-nhap-thong-tin" class="btn btn-primary"
 					style="float: right; margin: 20px">
 					<i class="fas fa-sync"> Đổi Mật Khẩu</i>
 				</a>

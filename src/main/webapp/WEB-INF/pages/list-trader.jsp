@@ -23,7 +23,7 @@
 					<td scope="row"><a href="#" class="link_h" style="font-weight: bold; color: #577903" data="${trader.id}">
 						${trader.name}</a></td>
 					<td>${trader.phoneNum}</td>
-					<td>${address.hamlet.address}</td>
+					<td>${trader.address.address}</td>
 					<td>${trader.ratingSum} Điểm</td>
 				</tr>
 				</c:forEach> 

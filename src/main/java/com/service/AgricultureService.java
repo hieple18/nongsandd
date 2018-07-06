@@ -1,14 +1,11 @@
 package com.service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.entity.Agriculture;
 import com.models.PriceList;
 import com.models.PriceR;
+import com.models.PriceRecord;
 import com.models.PriceU;
 import com.constant.Constant;
 import com.entity.AgriCategory;
@@ -49,7 +47,7 @@ public class AgricultureService {
     DateFormat outputFormatter = new SimpleDateFormat("MM/dd/yyyy");
     
     public List<Agriculture> getAllAgri(){
-        return agricultureReponsitory.findAll();
+        return agricultureReponsitory.getAllAvailable();
     }
     
     public List<Agriculture> getAgribySubID(int id){
@@ -64,14 +62,56 @@ public class AgricultureService {
     	return agriPriceReponsitory.getMinDatePrice();
     }
     
-    public List<Object[]> getPriceToday(){
-    	Date today = Constant.CURRENT_DATE();
-    	return agriPriceReponsitory.getPriceByday(today);
+    public boolean checkExistsPriceToday(){
+    	int count = agriPriceReponsitory.checkExistsPriceToday(Constant.CURRENT_DATE());
+    	
+    	return (count > 0)?true:false;
     }
     
-    public List<Object[]> getPriceByday(String sdate){
+    public List<PriceRecord> getPriceToday(){
+    	Date today = Constant.CURRENT_DATE();
+    	int month = Constant.CURRENT_MONTH();
+    	
+    	List<AgriPrice> prices = agriPriceReponsitory.getPriceByday(today);
+    	List<PriceRecord> records = new ArrayList<>();
+    	
+    	for (AgriPrice price : prices) {
+			int id = price.getAgriculture().getId();
+			String name = price.getAgriculture().getName();
+			float pri = price.getPrice();
+			float change = price.getPriceChange();
+			float min = agriPriceReponsitory.getmin(month, id);
+			float max = agriPriceReponsitory.getmax(month, id);
+			float avg = agriPriceReponsitory.getavg(month, id);
+			
+			PriceRecord priceRecord = new PriceRecord(id, name, pri, change, min, max, avg);
+			records.add(priceRecord);
+		}
+    	
+    	return records;
+    }
+    
+    public List<PriceRecord> getPriceByday(String sdate){
     	Date date = Date.valueOf(sdate);
-    	return agriPriceReponsitory.getPriceByday(date);
+    	int month = Constant.CURRENT_MONTH();
+    	
+    	List<AgriPrice> prices = agriPriceReponsitory.getPriceByday(date);
+    	List<PriceRecord> records = new ArrayList<>();
+    	
+    	for (AgriPrice price : prices) {
+			int id = price.getAgriculture().getId();
+			String name = price.getAgriculture().getName();
+			float pri = price.getPrice();
+			float change = price.getPriceChange();
+			float min = agriPriceReponsitory.getmin(month, id);
+			float max = agriPriceReponsitory.getmax(month, id);
+			float avg = agriPriceReponsitory.getavg(month, id);
+			
+			PriceRecord priceRecord = new PriceRecord(id, name, pri, change, min, max, avg);
+			records.add(priceRecord);
+		}
+    	
+    	return records;
     }
     
     public List<Float> getPriceChart(int id){
@@ -79,22 +119,24 @@ public class AgricultureService {
     }
     
     public void AddAgri(int cID, String name){
-    	Agriculture agriculture = new Agriculture(name, "/kg", new AgriCategory(cID));
+    	Agriculture agriculture = new Agriculture(name, "", Constant.ENABLE_STATE, new AgriCategory(cID));
+    	agricultureReponsitory.save(agriculture);
+    }
+    
+    public void updateAgri(int id, int cID, String name){
+    	Agriculture agriculture = new Agriculture(name, "", Constant.ENABLE_STATE, new AgriCategory(cID));
+    	agriculture.setId(id);
     	agricultureReponsitory.save(agriculture);
     }
     
     public void randomPrice(){
     	agriPriceReponsitory.deleteAll();
-        List<Agriculture> agricultures = agricultureReponsitory.findAll();
-        Date today = Constant.CURRENT_DATE();
-        Calendar cal = Calendar.getInstance();
+        List<Agriculture> agricultures = agricultureReponsitory.getAllAvailable();
         ArrayList<Integer> listi = new ArrayList<>();
         Random rand = new Random();
         
         for(int i=0;i<15;i++){
-            cal.setTime(today);
-            cal.add(Calendar.DATE, i*-1);
-            Date date = new Date(cal.getTime().getTime());
+            Date date = SubDateFromNow(i);
             
             for(int j = 0; j<agricultures.size();j++){
                 if(i==0){
@@ -116,21 +158,38 @@ public class AgricultureService {
     }
     
     public void deleteAgri(int id){
-    	agricultureReponsitory.delete(id);
+    	Agriculture agri = agricultureReponsitory.findOne(id);
+    	agri.setStatus(Constant.DISABLE_STATE);
+    	agricultureReponsitory.save(agri);
     }
 
+    public Date SubDateFromNow(int count){
+    	Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -count);
+		return new Date(cal.getTime().getTime());
+    }
+    
+    public HashMap<Integer, Float> getPreviousPrice(){
+    	Date previousDate = SubDateFromNow(1);
+    	List<Object[]> prices = agriPriceReponsitory.getForHashMap(previousDate);
+    	HashMap<Integer, Float> maps = new HashMap<Integer, Float>();
+    	
+    	for (Object[] object : prices) {
+			maps.put((int)object[0], (float)object[1]);
+		}
+    	
+    	return maps;
+    }
+    
 	public void createPrice(PriceList list){
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
-		Date datePrevious = new Date(cal.getTime().getTime());
+		HashMap<Integer, Float> prevPrice = getPreviousPrice();
 		List<PriceR> rs = list.getPrices();
-		System.out.println(rs + ", " + rs.size());
 		
 		for (PriceR priceR : rs) {
-			int agriID = priceR.getAgriID();
+			int id = priceR.getAgriID();
 			float price = priceR.getPrice();
-			System.out.println(price + ", " + agriID);
-			AgriPrice agriPrice = new AgriPrice(price, 0, Constant.CURRENT_DATE(), new Agriculture(agriID));
+			float change = prevPrice.containsKey(id) ? price - prevPrice.get(id) : 0;
+			AgriPrice agriPrice = new AgriPrice(price, change, Constant.CURRENT_DATE(), new Agriculture(id));
 			agriPriceReponsitory.save(agriPrice);
 		}
 	}
@@ -139,7 +198,7 @@ public class AgricultureService {
 		List<PriceR> prices = new ArrayList<>();
 		
 		for (Agriculture agriculture : agricultures) {
-			prices.add(new PriceR(0, agriculture.getId()));
+			prices.add(new PriceR(0, agriculture.getId(), agriculture.getName()));
 		}
 		
 		return new PriceList(prices);
@@ -152,6 +211,17 @@ public class AgricultureService {
 		return new PriceU(prices);
 	}
 	
+	public void updateChange(){
+		HashMap<Integer, Float> prevPrice = getPreviousPrice();
+		List<AgriPrice> prices = agriPriceReponsitory.getPriceByday(Constant.CURRENT_DATE());
+		for (AgriPrice price : prices) {
+			int id = price.getAgriculture().getId();
+			float change = prevPrice.containsKey(id) ? price.getPrice() - prevPrice.get(id) : 0;
+			price.setPriceChange(change);
+			agriPriceReponsitory.save(price);
+		}
+	}
+	
 	public void saveUpdatePrice(PriceU priceU){
 		List<AgriPrice> prices = priceU.getPrices();
 		Date today = Constant.CURRENT_DATE();
@@ -161,5 +231,7 @@ public class AgricultureService {
 			
 			agriPriceReponsitory.save(agriPrice);
 		}
+		
+		updateChange();
 	}
 }

@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="../form_page/user-head.jsp"></jsp:include>
-<<style>
+<style>
 <!--
 .nav_side_content .icon_header li a {
     display: block;
@@ -38,9 +38,9 @@
 			<thead>
 				<tr>
 					<th scope="col"></th>
-					<th scope="col" style="width: 15%">Thông tin</th>
-					<th scope="col" style="width: 12%">Số Lượng</th>
-					<th scope="col" style="width: 12%">Diện Tích</th>
+					<th scope="col" style="width: 20%">Thông tin</th>
+					<th scope="col" style="width: 15%">Số Lượng</th>
+					<th scope="col" style="width: 15%">Diện Tích</th>
 					<th scope="col" style="width: 15%">Ngày Đăng</th>
 					<th scope="col" style="width: 15%">Số Yêu Cầu</th>
 					<th scope="col" style="width: 15%">Hành Động</th>
@@ -62,7 +62,7 @@
 								test="${sale.status < 2 }">${sale.requestCount}</c:if></td>
 						<td>
 							<select class="form-control form-control-lg action_option">
-								<option selected disabled>Chọn</option>
+								<option value="-1" disabled selected>Chọn</option>
 								<c:if test="${sale.requestCount > 0 && sale.status < 2 }">
 									<option value="/NongSanDD/NguoiDung/ds-yeu-cau?id=${sale.id}">DS Yêu
 										Cầu</option>
@@ -92,22 +92,27 @@
 			$.confirm({
 				content : 'Bạn có muốn xóa tin bán này?',
 				icon : 'fa fa-question-circle',
+				title: 'Xác nhận',
+				type: 'orange',
 				animation : 'scale',
 				closeAnimation : 'scale',
 				opacity : 0.5,
 				buttons : {
-					'confirm' : function() {
-						window.location.href = "/NongSanDD/NguoiDung/xoa-tin-ban?id="
+					'Đồng Ý': {
+		        		btnClass: 'btn-blue',
+		        		action: function (){
+		        			window.location.href = "/NongSanDD/NguoiDung/xoa-tin-ban?id="
 								+ value;
-
-					},
-					cancel : function() {
+		        		}
+		            },
+					"Hủy" : function() {
 					}
 				}
 			});
 		} else {
 			window.location.href = this.value;
 		}
+	    $(this).filter('[value=-1]') .attr('selected', true)
 	});
 </script>
 

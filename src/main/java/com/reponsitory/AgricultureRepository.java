@@ -13,6 +13,9 @@ import com.entity.Agriculture;
 */
 public interface AgricultureRepository extends JpaRepository<Agriculture, Integer> {
 
-    @Query("select a from Agriculture a where a.agriCategory.id = ?1")
+    @Query("select a from Agriculture a where a.agriCategory.id = ?1 and a.status = 1")
     public List<Agriculture> getAgriBySub(int subID);
+    
+    @Query("select a from Agriculture a where a.status = 1")
+    public List<Agriculture> getAllAvailable();
 }

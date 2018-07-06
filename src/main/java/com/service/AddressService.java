@@ -1,10 +1,12 @@
 package com.service;
 
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.constant.Constant;
 import com.entity.Address;
 import com.entity.Commune;
 import com.entity.Hamlet;
@@ -28,6 +30,25 @@ public class AddressService {
     @Autowired 
     private AddressRepository addressRepository;
     
+    public void randomAddress(Address address, int hamletID) {
+		int communeID = getCommuneIDByHamletID(hamletID);
+		List<Double> map = Constant.GET_LNG(communeID);
+		Random r = new Random();
+
+		// map.get(0): max_lng, map.get(1): min_lng
+		double lng = map.get(1) + r.nextDouble() * (map.get(0) - map.get(1));
+
+		// map.get(2): max_lat, map.get(3): min_lat
+		double lat = map.get(3) + r.nextDouble() * (map.get(2) - map.get(3));
+		
+		address.setLng(lng);
+		address.setLat(lat);
+	}
+    
+    public void randomLngLat(Address address, int hamletID){
+    	
+    }
+    
     public List<Commune> getCommuneByDistrictID(int districtID){
         List<Commune> communes = communeReponsitory.getCommuneByDistrictID(districtID);
         return communes;
@@ -36,6 +57,11 @@ public class AddressService {
     public List<Hamlet> getHamletByCommnune(int communeID) {
         List<Hamlet> hamlets = hamletReponsitory.getHamletByCommuneID(communeID);
         return hamlets;
+    }
+    
+    public int getHamletByAddressID(int address) {
+        int hamletID = addressRepository.getHamletIDByAddress(address);
+        return hamletID;
     }
     
     public List<Object[]> getHamletNameByCommuneID(int communeID) {
@@ -56,8 +82,12 @@ public class AddressService {
     }
     
     public void createAddress(Address address, int hamletID){
-    	Hamlet hamlet = new Hamlet();
-    	hamlet.setHamletID(hamletID);
+    	Hamlet hamlet = hamletReponsitory.findOne(hamletID);
+    	
+    	address.setAddress(hamlet.getAddress());
+    	if(address.getLat() == 0) // if user do not select a point on maps then random lat and lng in commune scope
+    		randomAddress(address, hamletID);
+    	
     	address.setHamlet(hamlet);
     	addressRepository.save(address);
     }
@@ -87,5 +117,9 @@ public class AddressService {
     
     public String getCommuneName(int communeID){
     	return communeReponsitory.getCommuneName(communeID);
+    }
+    
+    public void deleteAddress(int id){
+    	addressRepository.delete(id);
     }
 }

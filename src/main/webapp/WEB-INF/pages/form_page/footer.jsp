@@ -1,122 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!-- Footer************************* -->
-<footer style="margin-top: 60px;">
-	<div class="main_footer">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer_logo">
-					<a href="index.html"><img src="resources/images/logo/logo-2.png"
-						alt="Logo"></a>
-					<p>Denouncing pleasures and praising pain was born and I will
-						give you a complete account of the system.</p>
-					<p>Expound that actual teachings the great explorer of the
-						truth, the master-builder of human happiness no one rejects,
-						likes, or avoids pleasure itself rationally.</p>
-
-					<a href="#" class="tran3s">buy theme</a>
-
-				</div>
-				<!-- End of .footer_logo -->
-
-				<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer_news">
-					<h5>recent post</h5>
-
-					<div class="recent-posts">
-						<div class="post">
-							<div class="post-thumb">
-								<a href="#"><img src="resources/images/blog/p1.jpg" alt=""></a>
-							</div>
-							<h4>
-								<a href="#">Control your cholestrol & fat in 2 weeks</a>
-							</h4>
-							<div class="post-info">
-								<i class="fa fa-clock-o"></i>08th Sep, 2015
-							</div>
-						</div>
-						<div class="post">
-							<div class="post-thumb">
-								<a href="#"><img src="resources/images/blog/p2.jpg" alt=""></a>
-							</div>
-							<h4>
-								<a href="#">Control your cholestrol & fat in 2 weeks</a>
-							</h4>
-							<div class="post-info">
-								<i class="fa fa-clock-o"></i>08th Sep, 2015
-							</div>
-						</div>
-						<div class="post">
-							<div class="post-thumb">
-								<a href="#"><img src="resources/images/blog/p3.jpg" alt=""></a>
-							</div>
-							<h4>
-								<a href="#">Control your cholestrol & fat in 2 weeks</a>
-							</h4>
-							<div class="post-info">
-								<i class="fa fa-clock-o"></i>08th Sep, 2015
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- End of .footer_news -->
-
-				<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer_subscribe">
-					<h5>categoreis</h5>
-					<ul class="list catagories">
-						<li><a href="#"><i class="fa fa-angle-right"></i>Arable &
-								Postoral Farmers</a></li>
-						<li><a href="#"><i class="fa fa-angle-right"></i>Become a
-								Member</a></li>
-						<li><a href="#"><i class="fa fa-angle-right"></i>Shop Our
-								Prodcuts</a></li>
-					</ul>
-					<div class="widget popular-tags">
-						<div class="sidebar-title">
-							<h5>tags</h5>
-						</div>
-
-						<a href="#">Fruits</a> <a href="#">Cosmetics</a> <a href="#">Farmers</a>
-						<a href="#">Healthy</a> <a href="#">Catering</a> <a href="#">Post
-							Format</a>
-					</div>
-				</div>
-				<!-- End of .footer_subscribe -->
-
-
-				<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer_contact">
-					<h5>Get In Touch</h5>
-					<ul class="list catagories">
-						<li><a href="#"><i class="fa fa-envelope"></i>Organic
-								store@gmail.com</a></li>
-						<li><a href="#"><i class="fa fa-phone"></i>+91 (321) 758
-								142 5698</a></li>
-						<li><a href="#"><i class="fa fa-home"></i>No 271, Red
-								Cross Building, Modern Street, Newyork City, USA.</a></li>
-					</ul>
-
-					<h5>Business Hours</h5>
-					<div class="list Business">
-						<p>
-							Monday - Friday: 09.00am to 07.00pm <br>Saturday: 10.00am to
-							05.00pm <br>Sunday: <span>Closed</span>
-						</p>
-					</div>
-
-				</div>
-				<!-- End of .footer_contact -->
-			</div>
-		</div>
-	</div>
-	<!-- End of .main_footer -->
-
+<footer>
 	<div class="bottom_footer clear_fix">
 		<div class="container">
 			<h6 class="pull-left">
-				Copyrights � 2015 All Rights Reserved by<a
-					href="http://themeforest.net/user/steelthemes/portfolio"
-					target="_blank">Steelthemes</a>
+			Copyrights � 2015 All Rights Reserved by
+			<a href="http://themeforest.net/user/steelthemes/portfolio" target="_blank"> Steelthemes</a>
 			</h6>
-			<ul class="social_icon pull-right">
+			<!-- <ul class="social_icon pull-right">
 				<li><a href="" class="tran3s"><i class="fa fa-cc-visa"
 						aria-hidden="true"></i></a></li>
 				<li><a href="" class="tran3s"><i
@@ -127,7 +19,7 @@
 						class="fa fa-credit-card-alt" aria-hidden="true"></i></a></li>
 				<li><a href="" class="tran3s"><i class="fa fa-cc-discover"
 						aria-hidden="true"></i></a></li>
-			</ul>
+			</ul> -->
 		</div>
 	</div>
 </footer>

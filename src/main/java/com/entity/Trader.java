@@ -43,16 +43,51 @@ public class Trader implements Serializable {
     @Column(name="dateCreate") 
     private Date dateCreate;
     
-    @OneToOne()
+    @Column(name="code") 
+    private int code;
+    
+    @Column(name="commune") 
+    private int commune;
+    
+    @Column(name="status")
+    private int status;
+    
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public int getCommune() {
+		return commune;
+	}
+
+	public void setCommune(int commune) {
+		this.commune = commune;
+	}
+
+
+
+	@OneToOne()
     @JoinColumn(name = "account", referencedColumnName = "username")
     private Account account;
     
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
-    
-    @OneToMany(mappedBy = "trader")
-    private Set<Mining> miningSet = new HashSet<>();
+
+    @OneToOne(mappedBy = "trader")
+    private Mining mining;
     
     @OneToMany(mappedBy = "trader")
     private Set<TradingAgri> tradingSet = new HashSet<>();
@@ -214,13 +249,12 @@ public class Trader implements Serializable {
 		this.traderNotifications = traderNotifications;
 	}
 
-	public Set<Mining> getMiningSet() {
-		return miningSet;
+	public Mining getMining() {
+		return mining;
 	}
 
-	public void setMiningSet(Set<Mining> miningSet) {
-		this.miningSet = miningSet;
+	public void setMining(Mining mining) {
+		this.mining = mining;
 	}
-	
 	
 }

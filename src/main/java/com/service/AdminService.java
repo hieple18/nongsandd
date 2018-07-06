@@ -71,8 +71,7 @@ public class AdminService {
 		return (double) tmp / factor;
 	}
 
-	public Address randomAddress(int hamletID) {
-		int communeID = addressService.getCommuneIDByHamletID(hamletID);
+	public Address randomAddress(int hamletID, int communeID) {
 		List<Double> map = Constant.GET_LNG(communeID);
 		Random r = new Random();
 
@@ -104,6 +103,7 @@ public class AdminService {
 			user.setPhoneNum(row.getCell(1).toString());
 			java.sql.Date sqlDate = java.sql.Date.valueOf(row.getCell(2).toString());
 			user.setDateCreate(sqlDate);
+			user.setStatus(Constant.VERIFIED);
 
 			// random account
 			Account account = randomAccount(user.getPhoneNum());
@@ -112,12 +112,12 @@ public class AdminService {
 			// random address
 			Random r = new Random();
 			int hamletID = r.nextInt(101);
-			Address address = randomAddress(hamletID);
+			int communeID = addressService.getCommuneIDByHamletID(hamletID);
+			Address address = randomAddress(hamletID, communeID);
 			user.setAddress(address);
+			user.setCommune(communeID);
 
 			userRepository.save(user);
-
-			System.out.println(user.getId() + ", " + user.getName());
 		}
 	}
 
@@ -160,8 +160,10 @@ public class AdminService {
 			sale.setQuantity(quantity);
 
 			int hamletID = r.nextInt(101);
-			Address address = randomAddress(hamletID);
+			int communeID = addressService.getCommuneIDByHamletID(hamletID);
+			Address address = randomAddress(hamletID, communeID);
 			sale.setAddress(address);
+			sale.setCommuneID(communeID);
 
 			int index = r.nextInt(listIDL - 1);
 			user.setId(listUserID.get(index));
@@ -227,6 +229,18 @@ public class AdminService {
 			sale.setCommuneID(communeID);
 			
 			saleRepository.save(sale);
+		}
+	}
+	
+	public void createAdmin(){
+		String userName = "hiep2218";
+		String pass = "ngunhucutVan";
+		
+		Account account = accountReponsitory.getAccountByPhone(userName, Constant.ROLE_ADMIN);
+		if(account == null){
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			account = new Account(userName, encoder.encode(pass), Constant.ROLE_ADMIN, Constant.ENABLE_STATE);
+			accountReponsitory.save(account);
 		}
 	}
 

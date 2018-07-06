@@ -26,4 +26,10 @@ public interface TraderCmtRepository extends JpaRepository<TraderCmt, Integer>{
 	
 	@Query("select t.ratingCount from TraderCmt t where t.id = ?1")
     public int getRatingStar(int id);
+	
+	@Query("select avg(t.ratingCount) from TraderCmt t where t.trader.id = ?1")
+    public int getAvgStar(int id);
+	
+	@Query("select t.trader.id from TraderCmt t where t.id = ?1")
+    public int getTraderID(int cmtID);
 }

@@ -79,7 +79,7 @@
 			<hr class="mb-3">
 			<div class="d-flex flex-wrap justify-content-between">
 				<div class="sp-buttons mt-2 mb-2" style="text-align: center">
-					<a href="/NongSanDD/NguoiDung/chinh-sua?id=${sale.id}"
+					<a href="/NongSanDD/NguoiDung/chinh-sua-tin-ban?id=${sale.id}"
 						class="btn btn-success btn-lg" style="margin: 10px"> <i
 						class="fas fa-edit"></i> Chỉnh Sửa
 					</a> <a href="#" onclick="deleteSale(${sale.id})"

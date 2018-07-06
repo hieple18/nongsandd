@@ -27,7 +27,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName)
             throws UsernameNotFoundException {
     	Account activeUserInfo = new Account();
-    	Account getUser = accountReponsitory.getActiveUser(userName);
+    	Account getUser = accountReponsitory.getActiveAuth(userName);
         if(getUser != null){
             activeUserInfo = getUser;
         }

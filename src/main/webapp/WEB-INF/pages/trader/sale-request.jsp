@@ -39,7 +39,8 @@
 						<select class="form-control form-control-lg action_option">
 							<option selected disabled>Chọn</option>
 							<option value="/NongSanDD/NhaBuon/chi-tiet-tin-ban?id=${data[1].id}&state=2"> Chi tiết</option>
-							<option value="${data[0]}"> Hủy yêu cầu</option>
+							<!-- set id to this value to detected this option need to ask user's confirmation before action -->
+							<option value="${data[0]}"> Hủy yêu cầu</option> 
 						</select>
 					</td>
 				</tr>
@@ -57,26 +58,35 @@
 <script type="text/javascript">
 $("#sale_request").on('change','.action_option', function () { 
     var value = $(this).val();
-    if (value >= 0) {
-    	$.confirm({
-	        content: 'Bạn có muốn hủy yêu cầu mua tin này không?',
-	        icon: 'fa fa-question-circle',
-	        animation: 'scale',
-	        closeAnimation: 'scale',
-	        opacity: 0.5,
-	        buttons: {
-	            'Đồng Ý': function (){
-	            	window.location.href = "/NongSanDD/NhaBuon/huy-yeu-cau?id=" + value;
-	            },
-	            cancel: function () {
-	            }
-	        }
-	    });
-	} else {
+
+    if (value >= 0) { // value is an id. this option need to ask user's confirmation before acrion
+    	cacelRequest(value);
+	} else { // value is a link. just follow this link
 		window.location.href = this.value;
 	}
 });
 
+function cacelRequest(id){
+	$.confirm({
+		content: 'Bạn có muốn hủy yêu cầu mua tin này không?',
+        icon: 'fa fa-question-circle',
+        title: 'Xác nhận',
+        animation: 'scale',
+        closeAnimation: 'scale',
+        opacity: 0.5,
+        type: 'orange',
+        buttons: {
+        	'Đồng Ý': {
+        		btnClass: 'btn-blue',
+        		action: function (){
+        			window.location.href = "/NongSanDD/NhaBuon/huy-yeu-cau?id=" + id;
+        		}
+            },
+            'Hủy' : function () {
+            }
+        }
+    });
+}
 </script>
 
 <script type='text/javascript'>

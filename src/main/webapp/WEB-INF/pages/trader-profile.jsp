@@ -37,7 +37,7 @@
 							</div>
 							<div class="single-item">
 								<div class="icon">
-									<i class="icon-wheat"></i>
+									<i class="icon-nature-1"></i>
 								</div>
 								<div class="count name color1">
 									Ngày Đăng ký: <span style="color: #333">
@@ -49,21 +49,17 @@
 							</div>
 							<div class="single-item">
 								<div class="icon">
-									<i class="icon-pencil-1"></i>
+									<i class="icon-wheat"></i>
 								</div>
 								<div class="count name color1"
 									style="display: -webkit-inline-box; margin-bottom: 5px">
-									Điểm Đánh Giá: &nbsp &nbsp <select id="sum-start-rating">
-										<option value="1">1</option>
-										<option value="2">2</option>
-										<option value="3">3</option>
-										<option value="4">4</option>
-										<option value="5">5</option>
-									</select>
+									Nông sản kinh doanh: &nbsp &nbsp <span style="color: #333">
+									<c:forEach var="item" items="${tradingAgris}">
+										${item}, 
+									</c:forEach>
+									</span>
 								</div>
-								<div class="name color1">
-									Lượt Đánh Giá: <span style="color: #333"> 0 Lượt</span>
-								</div>
+
 							</div>
 							
 							<div class="single-item">
@@ -91,7 +87,12 @@
 						</div>
 					</div>
 				</div>
-
+				
+				<a href="http://localhost:8080/NongSanDD/NguoiDung/thong-tin-nb?id=1" class="btn btn-primary"
+					style="float: right; margin-top: 20px">
+					<i class="fas fa-plus"> Thêm Đánh Giá</i>
+				</a>
+				
 				<div class="col-sm-12">
 
 					<c:forEach var="cmt" items="${cmts}">

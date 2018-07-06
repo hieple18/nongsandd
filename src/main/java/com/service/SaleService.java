@@ -6,7 +6,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,10 @@ import com.reponsitory.MiningRepository;
 import com.reponsitory.SaleRepository;
 import com.reponsitory.TradingAgriRepository;
 import com.reponsitory.TradingDataRepository;
+import com.twilio.sdk.TwilioRestClient;
+import com.twilio.sdk.TwilioRestException;
+import com.twilio.sdk.resource.factory.MessageFactory;
+import com.twilio.sdk.resource.instance.Message;
 
 /**
  * @author: HiepLe
@@ -87,6 +94,12 @@ public class SaleService {
 		}
 	}
 	
+	public boolean checkToCreateSale(int userID){
+		int month = Constant.CURRENT_MONTH();
+		int count = saleRepository.countSalePerMonth(userID, month);
+		return (count < Constant.SALE_LIMIT) ? true : false;
+	}
+	
 	public void createSale(Sale sale, List<String> links, int hamletID, User user){
 		sale.setUser(user);
 		
@@ -120,6 +133,8 @@ public class SaleService {
 			int saleID = data.getSale().getId();
 			saleRepository.updateState(Constant.DISABLE_STATE, saleID);
 			User user = saleRepository.getUser(saleID);
+			
+			sendVerifyCode(traderToConfirm.getName() + " đã hủy tin đã mua của bạn, vui lòng vào hệ thống xác nhận", user.getPhoneNum());
 			
 			userService.createNotification(saleID, Constant.U_SALE_REMOVE, user, traderToConfirm);
 		}
@@ -208,7 +223,7 @@ public class SaleService {
 		return dataRepository.getSaleSelectedForMaps(traderID, Constant.SELECTED_STATE);
 	}
 	
-	public List<TradingData> getSaleSelectedByUser(int userID){
+	public List<Object[]> getSaleSelectedByUser(int userID){
 		return dataRepository.getSaleSelectedByUser(userID, Constant.SELECTED_STATE);
 	}
 	
@@ -224,27 +239,31 @@ public class SaleService {
 		List<Object[]> communes = dataRepository.getCommuneForChar(traderID);
 		
 		for (Object[] objects : communes) {
-			objects[0] = addressService.getCommuneName((int)objects[0]);
+			objects[0] = Constant.GET_COMMUNE_SHORT_NAME((int)objects[0]);
 		}
 		
 		return communes;
 	}
 	
 	public List<PieChart> getAreaForChar(int traderID){
-		List<Mining> minings = miningRepository.getAllMiningByTrader(traderID);
-		HashMap<Integer, Integer> sum = minings.get(0).getArea();
-		minings.remove(0);
+		Mining mining = miningRepository.getMiningByTrader(traderID);
 		List<PieChart> result = new ArrayList<>();
+		HashMap<Integer, Integer> map = mining.getArea();
 		
-		for (Mining mining : minings) {
+		/*List<Mining> minings = miningRepository.getAllMiningByTrader(traderID);
+		List<PieChart> result = new ArrayList<>();
+		HashMap<Integer, Integer> sum = minings.get(0).getArea();
+		minings.remove(0);*/
+		
+		/*for (Mining mining : minings) {
 			HashMap<Integer, Integer> area = mining.getArea();
 			area.forEach((k,v) -> {
 				int value = sum.containsKey(k)? sum.get(k) + v : v;
 				sum.put(k, value);
 			});
-		}
+		}*/
 		
-		sum.forEach((k,v) -> {
+		map.forEach((k,v) -> {
 			int kk = k+1;
 			String name = k.toString() + "-" + kk;
 			
@@ -264,6 +283,9 @@ public class SaleService {
 		User user = saleRepository.getUser(saleID);
 		userService.createNotification(saleID, Constant.U_SALE_REQUEST, user, trader);
 		
+		String content = Constant.GET_USER_NOTIF_CONTENT(Constant.U_SALE_REQUEST, trader.getName());
+		sendVerifyCode(content, user.getPhoneNum());
+		
 		updateMining(trader.getId(), saleID);
 	}
 	
@@ -277,6 +299,15 @@ public class SaleService {
 	
 	public void cancelSaleRequest(int dataID){
 		dataRepository.updateState(dataID, Constant.DISABLE_STATE);
+		
+		Sale sale = dataRepository.getSale(dataID);
+		
+		int count = sale.getRequestCount() - 1;
+		sale.setRequestCount(count);
+		if(count == 0){
+			sale.setStatus(Constant.ENABLE_STATE);
+		}
+		saleRepository.save(sale);
 	}
 	
 	public int confirmRequest(int requestID, User user){
@@ -290,6 +321,10 @@ public class SaleService {
 		tradingData.setStatus(Constant.SELECTED_STATE);
 		dataRepository.save(tradingData);
 
+		String traderPhone = dataRepository.getTraderPhone(requestID);
+		String content = Constant.GET_TRADER_NOTIF_CONTENT(Constant.T_CONFIRM_REQUEST, user.getName());
+		sendVerifyCode(content, traderPhone);
+		
 		traderService.createNotification(requestID, Constant.T_CONFIRM_REQUEST, user, tradingData.getTrader());
 		
 		return saleID;
@@ -321,7 +356,7 @@ public class SaleService {
 	
 	public void updateSaleExpired(){
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, Constant.SALE_EXPERID);
+		cal.add(Calendar.DATE, -Constant.SALE_EXPERID);
 		Date Experid = new Date(cal.getTime().getTime());
 		saleRepository.updateSaleExpired(Experid);
 	}
@@ -334,40 +369,215 @@ public class SaleService {
 		return saleRepository.getSaleForExcel();
 	}
 	
+	public int getMaxForMining(HashMap<Integer, Integer> map){
+		int max = 0;
+		for (Entry<Integer, Integer> index : map.entrySet()) {
+			if(index.getValue() > max){
+				max = index.getValue();
+			}
+		}
+		
+		return max;
+	}
 	
-	public List<SaleScore> recommentSale(int traderID){
+	// calculate X value for recommend
+	public HashMap<Integer, Float> caculateXForMining(HashMap<Integer, Integer> areas, HashMap<Integer, Integer> ids, 
+    		HashMap<Integer, Integer> communeIDs, int sum_new){
+		int maxArea = Collections.max(areas.values());
+		int maxID = Collections.max(ids.values());
+		int maxCommune = Collections.max(communeIDs.values());
+
+		
+		float sum = maxArea + maxCommune + maxID;
+		float M_id = (float)maxID/sum;
+		float M_area = (float)maxArea/sum;
+		float M_comm = (float)maxCommune/sum;
+		
+		HashMap<Integer, Float> result = new HashMap<>();
+		result.put(Constant.AGRI_M, M_id);
+		result.put(Constant.AREA_M, M_area);
+		result.put(Constant.COMMUNE_M, M_comm);
+		
+		return result;
+	}
+	
+	public List<SaleScore> recommendSale(int traderID){
+		List<Sale> sales = getSaleListByTrader(traderID);
+		ArrayList<SaleScore> scores = new ArrayList<>();
+		
+		// if trader do not have any info to recommend then return list order by date create
+		Mining mining = miningRepository.getMiningByTrader(traderID);
+		if(mining == null || mining.isEmpty()) {
+			for (Sale sale : sales) {
+				scores.add(new SaleScore(sale, 0));
+			}
+			
+			return scores;
+		}
+		
+		// if trader have info to run mining
+		HashMap<Integer, Integer> areas = mining.getArea();
+		HashMap<Integer, Integer> agris = mining.getAgri();
+		HashMap<Integer, Integer> communeIDs = mining.getCommuneID();
+		
+		//get X value
+		int sum = dataRepository.getCountSale(traderID);
+		HashMap<Integer, Float> X = caculateXForMining(areas, agris, communeIDs, sum);
+		float X_area = X.get(Constant.AREA_M);
+		float X_id = X.get(Constant.AGRI_M);
+		float X_comm = X.get(Constant.COMMUNE_M);
+		
+		int area, communeID, id;
+		int areaScore, idScore, commScore;
+
+		for(int i = 0; i < sales.size(); i++){
+			Sale sale = sales.get(i);
+			area = (int)sale.getArea();
+			id = sale.getAgriculture().getId();
+			communeID = sale.getCommuneID();	
+			
+			areaScore = areas.get(area) == null ? 0 : areas.get(area);
+			idScore = agris.get(id) == null ? 0 : agris.get(id);
+			commScore = communeIDs.get(communeID) == null ? 0 : communeIDs.get(communeID);
+			int score = (int) (X_area*areaScore + X_comm*commScore + X_id*idScore);
+			
+			scores.add(new SaleScore(sale, score));
+		}
+		
+		Collections.sort(scores);
+		Collections.reverse(scores);
+
+		return scores;
+	}
+	
+	public void updateMining(int traderID, int saleID){
+		Sale sale = saleRepository.findOne(saleID);
+		Trader trader = new Trader(traderID);
+		
+		Mining mining = miningRepository.getMiningByTrader(traderID);
+		
+		HashMap<Integer, Integer> areas = mining.getArea();
+		HashMap<Integer, Integer> agris = mining.getAgri();
+		HashMap<Integer, Integer> communeIDs = mining.getCommuneID();
+
+		
+		int area, id, communeID;
+		int areaScore, quanScore, commScore;
+		
+		area = (int)sale.getArea();
+		id = sale.getAgriculture().getId();
+		communeID = sale.getCommuneID();
+		
+		// recount score
+		areaScore = areas.get(area) == null ? 1 : areas.get(area) + 1;
+		quanScore = agris.get(id) == null ? 1 : agris.get(id) + 1;
+		commScore = communeIDs.get(communeID) == null ? 1 : communeIDs.get(communeID) + 1;
+		
+		// update new score to hashmap
+		areas.put(area, areaScore);
+		agris.put(id, quanScore);
+		communeIDs.put(communeID, commScore);
+		
+		// save mining
+		mining.update(areas, agris, communeIDs, trader);
+		miningRepository.save(mining);
+	}
+	
+	public void updateAllMining(int traderID){
+		List<Sale> sales = dataRepository.getSaleForMining(traderID);
+		Trader trader = new Trader(traderID);
+		
+		Mining mining = miningRepository.getMiningByTrader(traderID);
+		
+		HashMap<Integer, Integer> areas = mining.getArea();
+		HashMap<Integer, Integer> agris = mining.getAgri();
+		HashMap<Integer, Integer> communeIDs = mining.getCommuneID();
+
+		int area, id, communeID;
+		int areaScore, quanScore, commScore;
+		for(int i = 0; i < sales.size(); i++){
+			Sale sale = sales.get(i);
+			area = (int)sale.getArea();
+			id = sale.getAgriculture().getId();
+			communeID = sale.getCommuneID();
+			
+			// recount score
+			areaScore = areas.get(area) == null ? 1 : areas.get(area) + 1;
+			quanScore = agris.get(id) == null ? 1 : agris.get(id) + 1;
+			commScore = communeIDs.get(communeID) == null ? 1 : communeIDs.get(communeID) + 1;
+			
+			// update new score to hashmap
+			areas.put(area, areaScore);
+			agris.put(id, quanScore);
+			communeIDs.put(communeID, commScore);
+		}
+		
+		// save mining
+		mining.update(areas, agris, communeIDs, trader);
+		miningRepository.save(mining);
+	}
+	
+	public String sendVerifyCode(String content, String phoneNum){
+		String phone = "+84" + phoneNum.substring(1);
+		
+    	try {
+            TwilioRestClient client = new TwilioRestClient(Constant.ACCOUNT_SID, Constant.AUTH_TOKEN);
+     
+            // Build a filter for the MessageList
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("Body", content));
+            params.add(new BasicNameValuePair("To", phone)); //Add real number here
+            params.add(new BasicNameValuePair("From", Constant.TWILIO_NUMBER));
+     
+            MessageFactory messageFactory = client.getAccount().getMessageFactory();
+            Message message = messageFactory.create(params);
+            System.out.println(message.getSid());
+            return "good";
+        }
+        catch (TwilioRestException e) {
+            return e.toString();
+        }
+    }
+	
+	// this function using for recommend sale for trader with distinguish agriculture id
+	/*public List<SaleScore> miningWithAgriID(int traderID){
 		List<Sale> sales = getSaleListByTrader(traderID);
 		int agriID = sales.get(0).getAgriculture().getId();
-		
-		Mining mining = miningRepository.getMiningByTrader(traderID, agriID);
-		if(mining == null) {
-			mining = new Mining();
-		}
-		HashMap<Integer, Integer> areas = mining.getArea();
-		HashMap<Integer, Integer> quanlitys = mining.getQuanlity();
-		HashMap<Integer, Integer> communeIDs = mining.getCommuneID();
 		ArrayList<SaleScore> scores = new ArrayList<>();
+		
+		// if trader do not have any info to recommend then return list order by date create
+		Mining mining = miningRepository.getMiningByTrader(traderID, agriID);
+		if(mining == null || mining.isEmpty()) {
+			for (Sale sale : sales) {
+				scores.add(new SaleScore(sale, 0));
+			}
+			
+			return scores;
+		}
+		
+		// if trader have info to run mining
+		HashMap<Integer, Integer> areas = mining.getArea();
+		HashMap<Integer, Integer> agris = mining.getAgri();
+		HashMap<Integer, Integer> communeIDs = mining.getCommuneID();
 
 		// list sale sort by id. this var to detect when id change
 		int currID = agriID;
 		
-		int area, quanlity, communeID;
-		int areaScore, quanScore, commScore;
-		
-		
-		
+		int area, communeID;
+		int areaScore, idScore, commScore;
+
 		for(int i = 0; i < sales.size(); i++){
 			Sale sale = sales.get(i);
 			int id = sale.getAgriculture().getId();
 			if(id == currID){
 				area = (int)sale.getArea();
-				quanlity = (int)sale.getQuantity()/4;
-				communeID = sale.getCommuneID();
+				id = sale.getAgriculture().getId();
+				communeID = sale.getCommuneID();	
 				
 				areaScore = areas.get(area) == null ? 0 : areas.get(area);
-				quanScore = quanlitys.get(quanlity) == null ? 0 : quanlitys.get(quanlity);
+				idScore = agris.get(id) == null ? 0 : agris.get(id);
 				commScore = communeIDs.get(communeID) == null ? 0 : communeIDs.get(communeID);
-				int score = areaScore + commScore;
+				int score = areaScore + commScore + idScore;
 				
 				scores.add(new SaleScore(sale, score));
 			}else{
@@ -378,7 +588,7 @@ public class SaleService {
 					mining = new Mining();
 				}
 				areas = mining.getArea();
-				quanlitys = mining.getQuanlity();
+				agris = mining.getAgri();
 				communeIDs = mining.getCommuneID();
 				
 				i--;
@@ -391,49 +601,19 @@ public class SaleService {
 		return scores;
 	}
 	
-	public void updateMining(int traderID, int saleID){
-		/*Sale sale = saleRepository.getSaleForUpdateMining(saleID);
-		
-		// convent to hashmap
-		Mining mining = miningRepository.getMiningByTrader(traderID);
-		if(mining == null){
-			System.out.println("null");
-		}
-		HashMap<Integer, Integer> areas = mining.getArea();
-		HashMap<Integer, Integer> quanlitys = mining.getQuanlity();
-		HashMap<Integer, Integer> communeIDs = mining.getCommuneID();
-		
-		int area = (int)sale.getArea();
-		int quanlity = (int)sale.getQuantity()/4;
-		int communeID = sale.getCommuneID();
-		
-		// recount score
-		int areaScore = areas.get(area) == null ? 1 : areas.get(area) + 1;
-		int quanScore = quanlitys.get(quanlity) == null ? 1 : quanlitys.get(quanlity) + 1;
-		int commScore = communeIDs.get(communeID) == null ? 1 : communeIDs.get(communeID) + 1;
-		
-		// update new 
-		 * 
-		 * score to hashmap
-		areas.put(area, areaScore);
-		quanlitys.put(quanlity, quanScore);
-		communeIDs.put(communeID, commScore);
-		
-		miningRepository.save(mining);*/
-	}
-	
-	public void updateAllMining(int traderID){
+	// this function using for recommend sale for trader with distinguish agriculture id
+	public void updateWithAgriID(int traderID){
 		List<Sale> sales = dataRepository.getSaleForMining(traderID);
 		Trader trader = new Trader(traderID);
 		
 		HashMap<Integer, Integer> areas = new HashMap<>();
-		HashMap<Integer, Integer> quanlitys = new HashMap<>();
+		HashMap<Integer, Integer> agris = new HashMap<>();
 		HashMap<Integer, Integer> communeIDs = new HashMap<>();
 		
 		// list sale sort by id. this var to detect when id change
 		int currID = sales.get(0).getAgriculture().getId();
 		
-		int area, quanlity, communeID, agriID;
+		int area, id, communeID, agriID;
 		int areaScore, quanScore, commScore;
 		for(int i = 0; i < sales.size(); i++){
 			Sale sale = sales.get(i);
@@ -441,33 +621,33 @@ public class SaleService {
 			
 			if(agriID == currID){ // id not change
 				area = (int)sale.getArea();
-				quanlity = (int)sale.getQuantity()/4;
+				id = sale.getAgriculture().getId();
 				communeID = sale.getCommuneID();
 				
 				// recount score
 				areaScore = areas.get(area) == null ? 1 : areas.get(area) + 1;
-				quanScore = quanlitys.get(quanlity) == null ? 1 : quanlitys.get(quanlity) + 1;
+				quanScore = agris.get(id) == null ? 1 : agris.get(id) + 1;
 				commScore = communeIDs.get(communeID) == null ? 1 : communeIDs.get(communeID) + 1;
 				
 				// update new score to hashmap
 				areas.put(area, areaScore);
-				quanlitys.put(quanlity, quanScore);
+				agris.put(id, quanScore);
 				communeIDs.put(communeID, commScore);
 			}else{ // id change
 				
 				// save mining
 				Mining mining = new Mining();
-				mining.update(areas, quanlitys, communeIDs, currID, trader);
+				mining.update(areas, agris, communeIDs, currID, trader);
 				miningRepository.save(mining);
 				
 				// init hashmap to store next id in list
 				areas = new HashMap<>();
-				quanlitys = new HashMap<>();
+				agris = new HashMap<>();
 				communeIDs = new HashMap<>();
 				
 				currID = sale.getAgriculture().getId();
 				i--;
 			}
 		}
-	}
+	}*/
 }

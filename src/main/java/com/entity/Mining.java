@@ -10,7 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -29,35 +29,29 @@ public class Mining implements Serializable{
     @Column(name="id")
     private int id;
     
-    @Column(name="agriID")
-    private int agriID;
+ // using for recommend with distinguish agriculture id
+    /*@Column(name="agriID")
+    private int agriID;*/
     
     @Column(name="area")
     private String area;
     
-    @Column(name="quanlity")
-    private String quanlity;
+    
+    @Column(name="agri")
+    private String agri;
     
     @Column(name="commmuneID")
     private String communeID;
     
-    @ManyToOne(fetch=FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "traderID", referencedColumnName = "id")
     private Trader trader;
     
     public Mining(){
     	area = "";
-    	quanlity = "";
+    	agri = "";
     	communeID = "";
     };
-
-	public int getAgriID() {
-		return agriID;
-	}
-	
-	public void setAgriID(int agriID) {
-		this.agriID = agriID;
-	}
 	
 	public Trader getTrader() {
 		return trader;
@@ -87,17 +81,17 @@ public class Mining implements Serializable{
 		}
 	}
 
-	public HashMap<Integer, Integer> getQuanlity() {
+	public HashMap<Integer, Integer> getAgri() {
 		if(area.equals("")){
 			return new HashMap<>(); 
 		}else{
-			return convertToHashMap(quanlity);
+			return convertToHashMap(agri);
 		}
 		
 	}
 
-	public void setQuanlity(String quanlity) {
-		this.quanlity = quanlity;
+	public void setAgri(String agri) {
+		this.agri = agri;
 	}
 
 	public HashMap<Integer, Integer> getCommuneID() {
@@ -127,10 +121,10 @@ public class Mining implements Serializable{
     }
     
     public void update(HashMap<Integer, Integer> areas, HashMap<Integer, Integer> quanlitys, 
-    		HashMap<Integer, Integer> communeIDs, int agriID, Trader trader){
+    		HashMap<Integer, Integer> communeIDs, Trader trader){
     	// init string
     	area = "";
-    	quanlity = "";
+    	agri = "";
     	communeID = "";
     	
     	// convent hashmap to string
@@ -138,7 +132,7 @@ public class Mining implements Serializable{
     		area = area + k.toString() + "," + v.toString() + ";"; 
     	});
     	quanlitys.forEach((k,v) -> {
-    		quanlity = quanlity + k.toString() + "," + v.toString() + ";"; 
+    		agri = agri + k.toString() + "," + v.toString() + ";"; 
     	});
     	communeIDs.forEach((k,v) -> {
     		communeID = communeID + k.toString() + "," + v.toString() + ";"; 
@@ -146,10 +140,20 @@ public class Mining implements Serializable{
     	
     	// remove ; character in the end
     	area = area.substring(0, area.length() - 1);
-    	quanlity = quanlity.substring(0, quanlity.length() - 1);
+    	agri = agri.substring(0, agri.length() - 1);
     	communeID = communeID.substring(0, communeID.length() - 1);
     	
-    	this.agriID = agriID;
     	this.trader = trader;
+    }
+    
+    public boolean isEmpty(){
+    	if(!"".equals(this.agri))
+    		return false;
+    	if(!"".equals(this.communeID))
+    		return false;
+    	if(!"".equals(this.area))
+    		return false;
+    	
+    	return true;
     }
 }

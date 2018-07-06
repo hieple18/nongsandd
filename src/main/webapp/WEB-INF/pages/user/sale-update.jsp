@@ -170,8 +170,8 @@
 				<div class="col-xs-12">
 					<input type="hidden" id = "imgUploaded">
 					<c:forEach var="link" items="${links}">
-                    	<span id="${link.name}" class="pip"><img class="old_imageThumb" src="${link.link}" /><br/>
-						<span class = "remove_style" onclick="deleteExistsImg(${link.name})">Xóa</span>
+                    	<span class="pip"><img class="old_imageThumb" src="${link.link}" /><br/>
+							<span id="${link.name}" class = "remove_style">Xóa</span>
 						</span>
                     </c:forEach>
 				</div>
@@ -181,7 +181,7 @@
 		<div class="form-group" style="text-align: center">
 			<div class="col-md-9 col-md-offset-3">
 	
-				<a class="btn btn-success" onclick="submitUploadSaleForm()">Đăng Kí</a>
+				<a class="btn btn-success" onclick="submitUploadSaleForm()">Cập Nhập</a>
 				<button class="btn btn-primary" style="margin-left: 50px">Hủy Bỏ</button>
 			</div>
 		</div>
@@ -256,6 +256,12 @@ $(document).ready(function() {
 	//save image uploaded
 	var imgArray = {};
 	
+	// image link to delete
+	var deleteArray = [];
+	
+	//save name of image to get link in function getUploadUrl()
+	var imgNames = [];
+	
 	//sum image uploaded
 	var countImage_h = 0;
 	var previousCount = ${linksSize};
@@ -275,9 +281,9 @@ $(document).ready(function() {
 							var fileReader = new FileReader();
 							fileReader.onload = (function(e) {
 								var imgName = e.target.fileName;
-								$("<span class=\"pip\">"
+								$("<span id=\"" + imgName + "\"" + "class=\"pip\">"
 												+ "<img class=\"imageThumb\" src=\"" + e.target.result + "\"/>"
-												+ "<br/><span id=\"" + imgName + "\"" + "class=\"remove_style remove\">Xóa</span>"
+												+ "<br/><span class=\"remove_style remove\">Xóa</span>"
 												+ "</span>").insertAfter("#imgUploaded");
 								$(".remove").click(function() {
 									var name = $(this).attr("id");
@@ -299,6 +305,13 @@ $(document).ready(function() {
                             icon: 'fa fa-warning',
                             type: 'orange',
                             content: 'Một tin bán chỉ được đăng tối đa 10 hình ảnh',
+                            buttons: {
+        	                    "Đồng ý": {
+        	                    	btnClass: 'btn-blue',
+        			        		action: function (){
+        			        		}
+        	                    }
+        	                }
                         });
 					}
 				}
@@ -310,22 +323,14 @@ $(document).ready(function() {
 </script>
 
 <script> /* define function relate to upload image to firebase */
-	
-	// delete image, which saved in firebase
-	function deleteExistsImg(name){
-		var storage = firebase.storage();
-		var storageRef = storage.ref('images/' + name);
-		
-		// Delete the file
-		storageRef.delete().then(function() {
-			delLink(name);
-			$("#" + name).remove();
-			previousCount--;
-		}).catch(function(error) {
-		  	alert("lỗi xóa ảnh");
-		});  
-	}
-	
+	$(".remove_style").click(function addToArray(name){
+		var name=$(this).attr('id');
+		delLink(name);
+		deleteArray.push(name);
+		previousCount--;
+		$(this).parent(".pip").remove();
+	})
+
 	// create image's name to store in database 
 	function createImgName(count){
 		var dCreate = new Date();
@@ -348,6 +353,32 @@ $(document).ready(function() {
 		return deferred.promise();
 	}
 	
+	// delete image, which saved in firebase
+	function deleteExistsImg(){
+		var deferred = $.Deferred();
+		var countDelete = 0;
+		var sumDelete = deleteArray.length;
+		deleteArray.forEach(function(element){
+			var storage = firebase.storage();
+			var storageRef = storage.ref('images/' + element);
+			
+			// Delete the file
+			storageRef.delete().then(function() {
+				countDelete++;
+				console.log(countDelete + ", " + sumDelete);
+				if(countDelete === sumDelete)
+					deferred.resolve();
+			}).catch(function(error) {
+				console.log("lỗi xóa ảnh");
+				countDelete++;
+				if(countDelete === sumDelete)
+					deferred.resolve();
+			});  
+		});
+		
+		return deferred.promise();
+	}
+	
 	function addLink(value){
 		var input = $("<input>").attr({"type":"hidden","name":"addlinks[]"}).val(value);
         $('#sale_info_form').append(input); 
@@ -357,10 +388,7 @@ $(document).ready(function() {
 		var input = $("<input>").attr({"type":"hidden","name":"dellinks[]"}).val(value);
         $('#sale_info_form').append(input); 
 	}
-	
-	//save name of image to get link in function getUploadUrl()
-	var imgNames = [];
-	
+
 	function submitImg(){
 		var deferred = $.Deferred();
 		// to detect when finish upload image
@@ -405,6 +433,7 @@ $(document).ready(function() {
 					
 					if(progress === 100){
 						if(currentCount_h === countImage_h - 1){
+							
 							setTimeout(function(){ deferred.resolve(); }, 1000);
 						}
 						currentCount_h++;
@@ -433,22 +462,63 @@ $(document).ready(function() {
 <script> /* submit form */
 	function submitUploadSaleForm(){
 		if($('#sale_info_form').valid()){
-			//upload more images
-			if(countImage_h > 0){
-				$.confirm({
-				    icon: 'fa fa-spinner fa-spin',
-				    type: 'green',
-				    title: 'Vui Lòng Chờ!',
-				    content: 'Việc tải hình ảnh lên có thể mất một lúc. Vui lòng chờ!'
-				});
-				
-				$.when(submitImg()).done(function(){
-					$.when(getUploadUrl()).done(function(){
-						$("#sale_info_form").submit();
+			if(countImage_h + previousCount > 0){
+				//upload more images
+				if(countImage_h > 0){
+					$.confirm({
+					    icon: 'fa fa-spinner fa-spin',
+					    type: 'green',
+					    title: 'Vui Lòng Chờ!',
+					    content: 'Việc tải hình ảnh lên có thể mất một lúc. Vui lòng chờ!',
+				    	buttons: {
+				    		"Đồng ý": {
+		                    	btnClass: 'hide-btn-confirm',
+				        		action: function (){
+				        		}
+		                    }
+		                }
 					});
-				});
+					
+					$.when(submitImg()).done(function(){
+						console.log("1 done");
+						$.when(getUploadUrl()).done(function(){
+							console.log("2 done");
+							var sumDelete = deleteArray.length
+							if(sumDelete > 0){
+								$.when(deleteExistsImg()).done(function(){
+									console.log("3 done");
+									$("#sale_info_form").submit();
+								});
+							}else{
+								$("#sale_info_form").submit();
+							}
+						});
+					});
+				}else{
+					var sumDelete = deleteArray.length
+					if(sumDelete > 0){
+						$.when(deleteExistsImg()).done(function(){
+							console.log("3 done");
+							$("#sale_info_form").submit();
+						});
+					}else{
+						$("#sale_info_form").submit();
+					}
+				}
 			}else{
-				$("#sale_info_form").submit();
+				$.confirm({
+				    icon: 'fa fa-warning',
+				    type: 'orange',
+				    title: 'Lỗi!',
+				    content: 'Vui lòng đăng ít nhất 1 hình ảnh!',
+				    buttons: {
+	                    "Đồng ý": {
+	                    	btnClass: 'btn-blue',
+			        		action: function (){
+			        		}
+	                    }
+	                }
+				});
 			}
 		}
 	}

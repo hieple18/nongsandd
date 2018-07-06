@@ -9,7 +9,7 @@
 	<section class="wrapper">
 
 		<div class="row">
-			<a class="col-lg-3 col-md-3 col-sm-12 col-xs-12"  href="/NongSanDD/NhaBuon/ds-tin-ban">
+			<a class="col-lg-4 col-md-3 col-sm-12 col-xs-12"  href="/NongSanDD/NhaBuon/ds-tin-ban">
 				<div class="info-box blue-bg">
 					<i class="fa fa-users"></i>
 					<div class="count">${fn:length(sales)}</div>
@@ -20,29 +20,18 @@
 			
 			<!--/.col-->
 
-			<a class="col-lg-3 col-md-3 col-sm-12 col-xs-12"  href="/NongSanDD/NhaBuon/ds-yeu-cau">
+			<a class="col-lg-4 col-md-3 col-sm-12 col-xs-12"  href="/NongSanDD/NhaBuon/ds-yeu-cau">
 				<div class="info-box brown-bg">
-					<i class="fa fa-user"></i>
+					<i class="fas fa-phone-volume"></i>
 					<div class="count">${fn:length(requests)}</div>
 					<div class="title">Dã Gửi Yêu Cầu</div>
 				</div>
 				<!--/.info-box-->
 			</a>
-			<!--/.col-->
 
-			<%-- 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<div class="info-box dark-bg">
-					<i class="fa fa-thumbs-o-up"></i>
-					<div class="count">${fn:length(sales)}</div>
-					<div class="title">Order</div>
-				</div>
-				<!--/.info-box-->
-			</div> --%>
-			<!--/.col-->
-
-			<a class="col-lg-3 col-md-3 col-sm-12 col-xs-12"  href="/NongSanDD/NhaBuon/tin-da-mua">
+			<a class="col-lg-4 col-md-3 col-sm-12 col-xs-12"  href="/NongSanDD/NhaBuon/tin-da-mua">
 				<div class="info-box green-bg">
-					<i class="fa fa-cubes"></i>
+					<i class="fas fa-check"></i>
 					<div class="count">${fn:length(selecteds)}</div>
 					<div class="title">Đã Mua</div>
 				</div>
@@ -52,22 +41,22 @@
 		</div>
 		
 		<div class="row">
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12" >
+			<div class="col-lg-4 col-md-3 col-sm-12 col-xs-12" >
 				<div id="agri-chart" style="min-width: 250px; height: 300px; max-width: 300px; margin: 0 auto"></div>
 			</div>
 			
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12" >
+			<div class="col-lg-4 col-md-3 col-sm-12 col-xs-12" >
 				<div id="commune-chart" style="min-width: 250px; height: 300px; max-width: 300px; margin: 0 auto"></div>
 			</div>
 			
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12" >
+			<div class="col-lg-4 col-md-3 col-sm-12 col-xs-12" >
 				<div id="area-chart" style="min-width: 250px; height: 300px; max-width: 300px; margin: 0 auto"></div>
 			</div>
 		</div>
 		<!--/.row-->
 
 		<div class="row">
-			<div class="col-lg-9 col-md-12">
+			<div class="col-lg-12 col-md-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h2>
@@ -76,11 +65,11 @@
 						<div class="panel-actions">
 							<img class="likei user_icon_active"
 								src="/NongSanDD/resources/images/admin/user_icon_active.png"
-								id="user_icon_img"> <img class="likei trader_icon_active"
-								src="/NongSanDD/resources/images/admin/trader_icon_active.png"
-								id="trader_icon_img"> <img class="likei sale_icon_active"
+								id="user_icon_img"> <img class="likei sale_icon_active"
 								src="/NongSanDD/resources/images/admin/sale_icon_active.png"
-								id="sale_icon_img">
+								id="sale_icon_img"> <img class="likei selected_icon_active"
+								src="https://firebasestorage.googleapis.com/v0/b/my-project-1511089672003.appspot.com/o/selected_icon_active.png?alt=media&token=62f050ed-a281-4bc6-aad8-b0af503b3e86"
+								id="selected_icon_img">
 						</div>
 					</div>
 					<div class="panel-body-map">
@@ -117,7 +106,7 @@
 				lat : 11.709757,
 				lng : 108.478252
 			},
-			zoom : 10,
+			zoom : 12,
 			mapTypeId : 'roadmap'
 		});
 
@@ -217,7 +206,7 @@
 			});
 		
 			google.maps.event.addListener(marker, 'click', function() {
-				window.location.href = "/NongSanDD/NhaBuon/sale-info?id="
+				window.location.href = "/NongSanDD/NhaBuon/chi-tiet-tin-ban?id="
 						+ ${sale.id} + "&state=2";
 			});
 		
@@ -233,7 +222,7 @@
 				position : new google.maps.LatLng(${sale.address.lat},
 						${sale.address.lng}),
 				map : map, // replaces  marker.setMap(map);
-				icon : "/NongSanDD/resources/images/admin/trader_iconmap.png"
+				icon : "/NongSanDD/resources/images/admin/selected_iconmap.png"
 			});
 			selectedMaker.push(marker); // store the marker in the array
 		
@@ -246,7 +235,7 @@
 			});
 		
 			google.maps.event.addListener(marker, 'click', function() {
-				window.location.href = "/NongSanDD/NhaBuon/sale-info?id="
+				window.location.href = "/NongSanDD/NhaBuon/chi-tiet-tin-ban?id="
 					+ ${sale.id} + "&state=3";
 			});
 		
@@ -275,7 +264,7 @@
 			});
 		
 			google.maps.event.addListener(marker, 'click', function() {
-				window.location.href = "/NongSanDD/NhaBuon/sale-info?id="
+				window.location.href = "/NongSanDD/NhaBuon/chi-tiet-tin-ban?id="
 					+ ${sale.id} + "&state=1";
 			});
 		
@@ -286,16 +275,16 @@
 	}
 
 	$(document).ready(function() {
-		$("#trader_icon_img").click(function() {
-			if ($(this).hasClass("trader_icon_active")) {
-				$(this).removeClass("trader_icon_active");
+		$("#selected_icon_img").click(function() {
+			if ($(this).hasClass("selected_icon_active")) {
+				$(this).removeClass("selected_icon_active");
 
-				$(this).attr("src", "/NongSanDD/resources/images/admin/trader_icon.png");
+				$(this).attr("src", "/NongSanDD/resources/images/admin/selected_icon.png");
 				selectedMaker.forEach(hideMaker);
 			} else {
-				$(this).addClass("trader_icon_active");
+				$(this).addClass("selected_icon_active");
 
-				$(this).attr("src", "/NongSanDD/resources/images/admin/trader_icon_active.png");
+				$(this).attr("src", "/NongSanDD/resources/images/admin/selected_icon_active.png");
 				selectedMaker.forEach(showMaker);
 			}
 		});
@@ -305,12 +294,12 @@
 				$(this).removeClass("sale_icon_active");
 
 				$(this).attr("src", "/NongSanDD/resources/images/admin/sale_icon.png");
-				saleMaker.forEach(hideMaker);
+				requestMaker.forEach(hideMaker);
 			} else {
 				$(this).addClass("sale_icon_active");
 
 				$(this).attr("src", "/NongSanDD/resources/images/admin/sale_icon_active.png");
-				saleMaker.forEach(showMaker);
+				requestMaker.forEach(showMaker);
 			}
 		});
 
@@ -319,12 +308,12 @@
 				$(this).removeClass("user_icon_active");
 
 				$(this).attr("src", "/NongSanDD/resources/images/admin/user_icon.png");
-				requestMaker.forEach(hideMaker);
+				saleMaker.forEach(hideMaker);
 			} else {
 				$(this).addClass("user_icon_active");
 
 				$(this).attr("src", "/NongSanDD/resources/images/admin/user_icon_active.png");
-				requestMaker.forEach(showMaker);
+				saleMaker.forEach(showMaker);
 			}
 		});
 
@@ -381,7 +370,8 @@ Highcharts.chart('agri-chart', {
                 style: {
                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                 }
-            }
+            },
+            showInLegend: true
         }
     },
     series: [{
@@ -399,7 +389,7 @@ Highcharts.chart('commune-chart', {
         type: 'pie'
     },
     title: {
-        text: 'Thống kê theo xã'
+        text: 'Thống kê theo Xã'
     },
     tooltip: {
         pointFormat: '{series.name}: <b>{point.y}</b>'
@@ -414,7 +404,8 @@ Highcharts.chart('commune-chart', {
                 style: {
                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                 }
-            }
+            },
+            showInLegend: true
         }
     },
     series: [{
@@ -447,7 +438,8 @@ Highcharts.chart('area-chart', {
                 style: {
                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                 }
-            }
+            },
+            showInLegend: true
         }
     },
     series: [{

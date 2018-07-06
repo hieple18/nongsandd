@@ -70,4 +70,7 @@ public interface SaleRepository extends JpaRepository<Sale, Integer>{
 	
 	@Query("select s from Sale s where s.id = ?1")
 	public Sale getSaleForUpdateMining(int saleID);
+	
+	@Query("select count(s) from Sale s where s.user.id = ?1 and extract(month from s.dateCreate) = ?2 and s.status = 1")
+	public int countSalePerMonth(int userID, int month);
 }
