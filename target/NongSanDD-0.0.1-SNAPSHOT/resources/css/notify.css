@@ -1,0 +1,250 @@
+.icon-bell-l {
+	background: url(/NongSanDD/resources/images/notify/line-icon.png)
+		no-repeat -217px -18px;
+	width: 23px;
+	height: 25px;
+	display: inline-block !important;
+}
+
+.top-nav {
+	margin-top: 7px;
+}
+
+.notification-row {
+	float: right;
+	margin-top: 15px;
+	margin-left: 65px;
+}
+
+.pull-right {
+	float: right !important;
+	display: -webkit-box;
+}
+
+.badge.bg-important {
+	background: #00a0df;
+	font-family: 'Lato', sans-serif;
+	font-size: 11px;
+}
+
+.notification-row .badge {
+	position: absolute;
+	right: -4px;
+	top: 0px;
+	z-index: 100;
+	border-radius: 9px;
+	min-width: 18px;
+	height: 18px;
+	text-align: center;
+	padding: 3px 5px;
+	background: #fb4c4c;
+	font-weight: 400;
+}
+
+.top-nav li.dropdown .dropdown-menu {
+	float: right;
+	right: 0;
+	left: auto;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0)
+	.dropdown-menu.extended {
+	box-shadow
+	
+	
+	:
+	
+	 
+	
+	0
+	2
+	px
+	
+	 
+	
+	8
+	px
+	
+	 
+	
+	rgba
+	
+	
+	(0
+	,
+	0,
+	0,
+	0
+	.176
+	
+	
+	)
+	!
+	important
+	
+	
+	;
+}
+
+.dropdown-menu.extended {
+	max-width: 300px !important;
+	min-width: 160px !important;
+	top: 42px;
+	width: 235px !important;
+	padding: 0;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.176) !important;
+	border: none !important;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+
+.dropdown-menu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	display: none;
+	float: left;
+	min-width: 160px;
+	padding: 5px 0;
+	margin: 2px 0 0;
+	list-style: none;
+	font-size: 14px;
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	background-clip: padding-box;
+}
+
+.notify-arrow {
+	border-style: solid;
+	border-width: 0 9px 9px;
+	height: 0;
+	margin-top: 0;
+	opacity: 0;
+	position: absolute;
+	right: 7px;
+	top: -18px;
+	transition: all 0.25s ease 0s;
+	width: 0;
+	z-index: 10;
+	margin-top: 10px;
+	opacity: 1;
+}
+
+.notify-arrow-blue {
+	border-color: transparent transparent #688a7e;
+	border-bottom-color: #688a7e !important;
+	border-top-color: #688a7e !important;
+}
+
+.notify-content {
+    padding: 10px 5px 2px 10px!important;
+	width: 100%;
+	display: inline-block;
+}
+
+.notify-content {
+	border-bottom: 1px solid #EBEBEB !important;
+	font-size: 12px;
+	list-style: none;
+}
+
+.notify-content:hover {
+	color: #0e99b9;
+}
+
+.notify-url {
+	float: right;
+}
+
+.dropdown-menu>li>a {
+	color: #797979;
+}
+
+.dropdown-menu>li>a {
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	font-weight: normal;
+	line-height: 1.428571429;
+	color: #2b2b2b;
+	white-space: nowrap;
+}
+
+.dropdown-menu.extended li p.blue {
+	background-color: #688a7e;
+	color: #fff;
+}
+
+.dropdown-menu.extended li p {
+	background-color: #F1F2F7;
+	color: #666666;
+	margin: 0;
+	padding: 10px;
+}
+
+a, a:hover, a:focus {
+	text-decoration: none;
+	outline: none;
+	outline: 0;
+}
+
+.top-nav ul.top-menu>li {
+	margin-left: 10px;
+}
+
+.top-nav ul.top-menu>li>a {
+	padding: 8px;
+	background: none;
+	margin-right: 0;
+}
+
+.top-nav ul.top-menu>li .dropdown-menu.logout {
+	width: 200px !important;
+}
+
+.top-nav .dropdown-menu.extended.logout {
+	top: 50px;
+}
+
+.dropdown-menu.extended.logout>li.eborder-top {
+	border-top: 2px solid #688a7e !important;
+}
+
+.dropdown-menu.extended.logout>li:last-child>a, .dropdown-menu.extended.logout>li:last-child>a:hover
+	{
+	color: #fff;
+	border-bottom: none !important;
+	text-transform: uppercase;
+	background-color: #688a7e !important;
+}
+
+.log-arrow-up {
+	background: url(/NongSanDD/resources/images/notify/arrow-up.png)
+		no-repeat;
+	width: 20px;
+	height: 11px;
+	position: absolute;
+	right: 20px;
+	top: -10px;
+}
+
+.profile-ava img {
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	border: 2px solid #688a7e;
+	display: inline-block;
+}
+
+img {
+	vertical-align: middle;
+}
+
+#task_notificatoin_bar, #mail_notificatoin_bar, #alert_notificatoin_bar
+	{
+	margin-top: 7px;
+}
