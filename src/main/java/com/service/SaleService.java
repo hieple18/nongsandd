@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.NameValuePair;
@@ -263,12 +264,12 @@ public class SaleService {
 			});
 		}*/
 		
-		map.forEach((k,v) -> {
-			int kk = k+1;
-			String name = k.toString() + "-" + kk;
+		for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+			int kk = entry.getKey()+1;
+			String name = entry.getKey().toString() + "-" + kk;
 			
-			result.add(new PieChart(name,v));
-		});
+			result.add(new PieChart(name,entry.getValue()));
+		}
 		
 		return result;
 	}

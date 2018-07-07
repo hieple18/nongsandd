@@ -2,6 +2,7 @@ package com.entity;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -128,15 +129,17 @@ public class Mining implements Serializable{
     	communeID = "";
     	
     	// convent hashmap to string
-    	areas.forEach((k,v) -> {
-    		area = area + k.toString() + "," + v.toString() + ";"; 
-    	});
-    	quanlitys.forEach((k,v) -> {
-    		agri = agri + k.toString() + "," + v.toString() + ";"; 
-    	});
-    	communeIDs.forEach((k,v) -> {
-    		communeID = communeID + k.toString() + "," + v.toString() + ";"; 
-    	});
+    	for (Map.Entry<Integer, Integer> entry : areas.entrySet()) {
+			area = area + entry.getKey().toString() + "," + entry.getValue().toString() + ";"; 
+		}
+
+    	for (Map.Entry<Integer, Integer> entry : quanlitys.entrySet()) {
+    		agri = agri + entry.getKey().toString() + "," + entry.getValue().toString() + ";"; 
+		}
+
+    	for (Map.Entry<Integer, Integer> entry : communeIDs.entrySet()) {
+    		communeID = communeID + entry.getKey().toString() + "," + entry.getValue().toString() + ";"; 
+		}
     	
     	// remove ; character in the end
     	area = area.substring(0, area.length() - 1);
